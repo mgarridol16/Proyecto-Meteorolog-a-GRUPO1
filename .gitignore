@@ -14,7 +14,7 @@ $RECYCLE.BIN/
 /vendor/
 
 # Archivos de entorno (IMPORTANTE: Contienen contraseñas)
-.#AQUI VA A IR EL ARCHIVO .ENV
+#AQUI VA A IR EL ARCHIVO .ENV
 
 # Logs y errores
 *.log
