@@ -1,0 +1,31 @@
+# --- Windows ---
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# --- Visual Studio Code (Editor ligero) ---
+.vscode/
+*.code-workspace
+
+# --- PHP ---
+# Dependencias de Composer (Librerías)
+/vendor/
+
+# Archivos de entorno (IMPORTANTE: Contienen contraseñas)
+.env
+.env.local
+.env.*.local
+
+# Logs y errores
+*.log
+error_log
+
+# PHPUnit (Pruebas)
+.phpunit.result.cache
+
+# Archivos temporales o de respaldo
+*.bak
+*.tmp
+*.swp
