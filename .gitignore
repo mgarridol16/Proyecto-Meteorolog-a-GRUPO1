@@ -27,3 +27,6 @@ error_log
 *.bak
 *.tmp
 *.swp
+
+#Archivos personales
+Base_de_datos
