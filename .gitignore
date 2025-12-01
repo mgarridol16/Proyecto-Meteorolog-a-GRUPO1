@@ -30,3 +30,6 @@ error_log
 
 #Archivos personales
 Base_de_datos
+
+# Ignorar cualquier archivo .env en cualquier carpeta
+*.env
