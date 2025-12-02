@@ -7,7 +7,7 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 
 class Database
 {
-    public function __construct()
+    public function __construct($hostname, $port, $dbname, $dbuser, $dbpassword)
     {
         try {
             $capsule = new Capsule;
@@ -15,11 +15,11 @@ class Database
 
             $capsule->addConnection([
                 'driver'    => 'mysql',
-                'host'      => $_ENV['DB_HOST'],
-                'port'      => $_ENV['DB_PORT'],
-                'database'  => $_ENV['DB_DATABASE'],
-                'username'  => $_ENV['DB_USERNAME'],
-                'password'  => $_ENV['DB_PASSWORD'],
+                'host'      => $hostname,
+                'port'      => $port,
+                'database'  => $dbname,
+                'username'  => $dbuser,
+                'password'  => $dbpassword,
                 'charset' => 'utf8',
                 'collation' => 'utf8_unicode_ci',
                 'prefix' => '',
