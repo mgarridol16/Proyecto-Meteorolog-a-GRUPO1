@@ -14,7 +14,7 @@ $RECYCLE.BIN/
 /vendor/
 
 # Archivos de entorno (IMPORTANTE: Contienen contraseñas)
-.#AQUI VA A IR EL ARCHIVO .ENV
+#AQUI VA A IR EL ARCHIVO .ENV
 
 # Logs y errores
 *.log
@@ -27,3 +27,10 @@ error_log
 *.bak
 *.tmp
 *.swp
+
+#Archivos personales
+Base_de_datos
+
+# Ignorar cualquier archivo .env en cualquier carpeta
+*.env
+proyecto_meteo/vendor
