@@ -33,3 +33,4 @@ Base_de_datos
 
 # Ignorar cualquier archivo .env en cualquier carpeta
 *.env
+proyecto_meteo/vendor
