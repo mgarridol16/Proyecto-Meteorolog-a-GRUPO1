@@ -11,7 +11,6 @@ class Database
     {
         try {
             $capsule = new Capsule;
-            error_log("ENV HOST=" . ($_ENV['DB_HOST'] ?? 'NO CARGADO'));
 
             $capsule->addConnection([
                 'driver'    => 'mysql',
@@ -28,6 +27,7 @@ class Database
             $capsule->setAsGlobal();
             $capsule->bootEloquent();
             error_log("Conectado a la base de datos");
+            
         } catch (\Exception $e) {
             die("Error al conectar a la base de datos: " . $e->getMessage());
         }
