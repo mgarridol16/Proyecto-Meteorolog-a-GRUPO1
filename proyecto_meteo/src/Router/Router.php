@@ -8,16 +8,20 @@ class Router
 
     public function __construct()
     {
-        $this->rutas['/'] = ['controller' => 'Controller', 'action' => 'index'];
+        //$this->rutas['/'] = ['controller' => 'Controller', 'action' => 'index'];
         $this->rutas['/testdb'] = ['controller' => 'Controller','action' => 'testDB'];
-
+        
+        //Rutas Victor
+        $this->rutas['/'] = ['controller' => 'Controller_victor', 'action' => 'index'];
+        $this->rutas['/datos'] = ['controller' => 'Controller_victor','action' => 'datos'];
 
 
 
     }
 
     public function handleRequest()
-    {
+    {   
+        error_log($_SERVER["REQUEST_URI"]);
         $ruta = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
         if (isset($this->rutas[$ruta])) {
