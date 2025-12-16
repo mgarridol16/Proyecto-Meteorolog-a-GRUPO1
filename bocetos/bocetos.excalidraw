@@ -313,12 +313,7 @@
       "index": "ad",
       "frameId": null,
       "roundness": null,
-      "boundElements": [
-        {
-          "id": "XRgyzZy7zAniCggkUXdZ1",
-          "type": "arrow"
-        }
-      ],
+      "boundElements": [],
       "updated": 1764057190045,
       "link": null,
       "locked": false,
@@ -443,12 +438,7 @@
       "index": "ak",
       "frameId": null,
       "roundness": null,
-      "boundElements": [
-        {
-          "id": "dUXYJenVH_PgXgQZZDvXL",
-          "type": "arrow"
-        }
-      ],
+      "boundElements": [],
       "updated": 1764057762084,
       "link": null,
       "locked": false,
@@ -1351,12 +1341,7 @@
       "index": "b0S",
       "frameId": null,
       "roundness": null,
-      "boundElements": [
-        {
-          "id": "SjbldC8C96D9lTYdlj3Vg",
-          "type": "arrow"
-        }
-      ],
+      "boundElements": [],
       "updated": 1764057321515,
       "link": null,
       "locked": false
@@ -1975,12 +1960,7 @@
       "index": "b0h",
       "frameId": null,
       "roundness": null,
-      "boundElements": [
-        {
-          "id": "dUXYJenVH_PgXgQZZDvXL",
-          "type": "arrow"
-        }
-      ],
+      "boundElements": [],
       "updated": 1764057762084,
       "link": null,
       "locked": false
@@ -4805,7 +4785,7 @@
       "version": 122,
       "versionNonce": 747810951,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1764056887204,
       "link": null,
       "locked": false,
@@ -5700,7 +5680,7 @@
       "version": 48,
       "versionNonce": 111198889,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1764057025644,
       "link": null,
       "locked": false
@@ -6465,8 +6445,8 @@
     },
     {
       "type": "text",
-      "version": 756,
-      "versionNonce": 2088004169,
+      "version": 782,
+      "versionNonce": 511852126,
       "isDeleted": false,
       "id": "AX4JNd9gi8JGtCbSvl-nY",
       "fillStyle": "hachure",
@@ -6495,7 +6475,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1764057161003,
+      "updated": 1765275498236,
       "link": null,
       "locked": false,
       "containerId": null,
@@ -6696,7 +6676,7 @@
       "version": 124,
       "versionNonce": 1283722729,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1764057271063,
       "link": null,
       "locked": false,

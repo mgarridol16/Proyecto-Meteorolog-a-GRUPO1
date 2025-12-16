@@ -1,0 +1,1 @@
+GET http://localhost:8000/datos?temp=23.00&pres=500.00&hum=60.00&viento=20.00 

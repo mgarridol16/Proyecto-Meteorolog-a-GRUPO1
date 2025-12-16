@@ -1,0 +1,43 @@
+/* NAV */
+.borde_inferior{
+    border-bottom: 1px solid #C1D96A;
+}
+.bordes_laterales > :first-child {
+    border-left: 1px solid #C1D96A;
+}
+.bordes_laterales li a:hover{
+    color: #0D0D0D;
+}
+
+.bordes_laterales li{
+    border-right: 1px solid #C1D96A;
+}
+
+.bordes_laterales li a{
+    color: #95BF39;
+}
+
+/* HEADER */
+header{
+    background-color: #C1D96A;
+}
+
+header span{
+    color: white;
+}
+
+.logo-header {
+    height: 100px;
+    width: auto;
+}
+
+
+
+/* FOOTER */
+footer{
+    background-color: #C1D96A;
+}
+
+footer span{
+    color: white;
+}
