@@ -17,6 +17,8 @@ class Router
 
         //Rutas Mikel
         $this->rutas['/medidas-24h'] = ['controller' => 'Controller_mikel', 'action' => 'medidas'];
+        $this->rutas['/historico-viento'] = ['controller' => 'Controller_mikel', 'action' => 'historicoViento'];
+
 
         
 

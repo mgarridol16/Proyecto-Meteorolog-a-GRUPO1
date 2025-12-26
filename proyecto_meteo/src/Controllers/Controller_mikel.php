@@ -82,4 +82,24 @@ class Controller_mikel
             echo "Error crítico en el controlador: " . $e->getMessage();
         }
     }
+
+    // C9: Controlador para gestionar vistas de Velocidad del viento
+    public function historicoViento()
+    {
+        // Captura de fechas para el filtro (M4.5)
+        $fechaInicio = $_GET['fecha_inicio'] ?? date('Y-m-d', strtotime('-7 days'));
+        $fechaFin = $_GET['fecha_fin'] ?? date('Y-m-d');
+
+        // M4.5: Métodos de acceso a la columna 'viento'
+        $datosViento = Datos::select('fechaSistema', 'viento')
+                        ->whereBetween('fechaSistema', [$fechaInicio . " 00:00:00", $fechaFin . " 23:59:59"])
+                        ->orderBy('fechaSistema', 'ASC')
+                        ->get();
+
+        echo $this->twig->render('historico_viento.html.twig', [
+            'datos' => $datosViento,
+            'titulo' => 'Análisis del Viento',
+            'filtros' => ['inicio' => $fechaInicio, 'fin' => $fechaFin]
+        ]);
+    }
 }
