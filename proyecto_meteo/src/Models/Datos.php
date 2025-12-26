@@ -15,3 +15,6 @@ class Datos extends Model{
 
     protected $fillable = ["temperatura", "presion", "humedad", "viento", "lluvia"];
 }
+
+
+
