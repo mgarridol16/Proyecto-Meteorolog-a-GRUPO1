@@ -2,80 +2,84 @@
 
 namespace App\Controllers;
 
-
 use Dotenv\Dotenv;
 use App\Models\Datos;
-
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
-
 use App\Models\Database;
-use App\Controllers\now;
 
 class Controller_mikel
 {
-    private $dotenv;
     private $twig;
-    private $model;
 
     public function __construct()
     {
+        // 1. Carga de variables de entorno
         $dotenv = Dotenv::createImmutable(__DIR__ . "/../..");
         $dotenv->load();
-        $hostname = $_ENV['DB_HOST'];
-        $port = $_ENV['DB_PORT'];
-        $dbname = $_ENV['DB_DATABASE'];
-        $dbuser = $_ENV['DB_USERNAME'];
-        $dbpassword = $_ENV['DB_PASSWORD'];
-        $key = $_ENV['KEY'];
+        
+        // 2. Inicialización de la base de datos (Eloquent lo usa internamente)
+        new Database(
+            $_ENV['DB_HOST'], 
+            $_ENV['DB_PORT'], 
+            $_ENV['DB_DATABASE'], 
+            $_ENV['DB_USERNAME'], 
+            $_ENV['DB_PASSWORD']
+        );
 
+        // 3. Configuración de Twig
         $loader = new FilesystemLoader(__DIR__ . "/../Views");
         $this->twig = new Environment($loader);
-
-        $this->model = new Database($hostname, $port, $dbname, $dbuser, $dbpassword);
     }
 
-    
-    public function getDatosUltimas24Horas()
+    /**
+     * Obtiene los registros detallados filtrando por el rango de 24h.
+     */
+    private function getDatosRango24h($inicio, $fin)
     {
-        $fecha24HorasAtras = date('Y-m-d H:i:s', time() - 86400);
-        return Datos::where('fechaSistema', '>=', $fecha24HorasAtras)
+        return Datos::where('fechaSistema', '>=', $inicio)
+                    ->where('fechaSistema', '<=', $fin)
                     ->orderBy('fechaSistema', 'desc')
                     ->get();
     }
 
-    public function getEstadisticas24Horas()
+    /**
+     * Obtiene las estadísticas aplicando el MISMO filtro de tiempo que la tabla.
+     */
+    private function getEstadisticasRango24h($inicio, $fin)
     {
-
-    {
-        $fecha24HorasAtras = date('Y-m-d H:i:s', time() - 86400);
-        return Datos::where('fechaSistema', '>=', $fecha24HorasAtras)
-                    ->selectRaw('COUNT(*) as total_registros')
+        return Datos::where('fechaSistema', '>=', $inicio)
+                    ->where('fechaSistema', '<=', $fin)
                     ->selectRaw('AVG(temperatura) as temp_promedio')
                     ->selectRaw('MIN(temperatura) as temp_minima')
                     ->selectRaw('MAX(temperatura) as temp_maxima')
                     ->selectRaw('AVG(humedad) as humedad_promedio')
-                    ->selectRaw('AVG(presion) as presion_promedio')
                     ->selectRaw('AVG(viento) as viento_promedio')
                     ->selectRaw('SUM(lluvia) as lluvia_total')
                     ->first();
     }
-    }
 
+    /**
+     * Función principal que coordina la carga de datos y la vista.
+     */
     public function medidas()
     {
         try {
-            $datos24h = $this->getDatosUltimas24Horas();
-            $estadisticas = $this->getEstadisticas24Horas();
+            // Definimos el rango una sola vez para ambas consultas
+            $fin = date('Y-m-d H:i:s');
+            $inicio = date('Y-m-d H:i:s', strtotime('-24 hours'));
+
+            $datos24h = $this->getDatosRango24h($inicio, $fin);
+            $estadisticas = $this->getEstadisticasRango24h($inicio, $fin);
             
             echo $this->twig->render('medidas_24h.html.twig', [
-                'datos' => $datos24h,
+                'datos'        => $datos24h,
                 'estadisticas' => $estadisticas,
-                'titulo' => 'Medidas Meteorológicas - Últimas 24 Horas'
+                'titulo'       => 'Medidas Meteorológicas - Últimas 24 Horas'
             ]);
+
         } catch (\Exception $e) {
-            echo "Error al cargar los datos: " . $e->getMessage();
+            echo "Error crítico en el controlador: " . $e->getMessage();
         }
     }
-
 }

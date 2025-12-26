@@ -16,7 +16,7 @@ class Router
         $this->rutas['/datos'] = ['controller' => 'Controller_victor','action' => 'datos'];
 
         //Rutas Mikel
-        $this->rutas['/medidas'] = ['controller' => 'controller_mikel', 'action' => 'medidas'];
+        $this->rutas['/medidas-24h'] = ['controller' => 'Controller_mikel', 'action' => 'medidas'];
 
         
 
