@@ -1,11 +1,8 @@
 <?php
-
 namespace App\Routes;
-
 class Router
 {
     private $rutas = [];
-
     public function __construct()
     {
         //$this->rutas['/'] = ['controller' => 'Controller', 'action' => 'index'];
@@ -15,8 +12,8 @@ class Router
         $this->rutas['/'] = ['controller' => 'Controller_victor', 'action' => 'index'];
         $this->rutas['/datos'] = ['controller' => 'Controller_victor','action' => 'datos'];
 
-
-
+        //rutas luismi
+        $this->rutas['/temperatura'] = ['controller' => 'Controller_Luismi', 'action' => 'historicoTemperatura'];
     }
 
     public function handleRequest()
@@ -47,6 +44,5 @@ class Router
         }
     }
 }
-
 $router = new Router();
 $router->handleRequest();
