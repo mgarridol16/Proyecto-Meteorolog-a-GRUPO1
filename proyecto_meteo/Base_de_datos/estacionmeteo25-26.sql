@@ -30,7 +30,7 @@ USE `estacionmeteo25-26`;
 --
 
 CREATE TABLE `datos` (
-  `fechaSistema` timestamp NOT NULL DEFAULT current_timestamp(),
+  `fechaSistema` DATETIME NOT NULL DEFAULT current_timestamp(),
   `temperatura` decimal(4,2) DEFAULT NULL,
   `presion` decimal(7,2) DEFAULT NULL,
   `humedad` decimal(5,2) DEFAULT NULL,
