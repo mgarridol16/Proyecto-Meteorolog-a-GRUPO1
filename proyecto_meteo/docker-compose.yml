@@ -5,7 +5,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: meteo
+      MYSQL_DATABASE: estacionmeteo25-26
       MYSQL_USER: Meteo1
       MYSQL_PASSWORD: Meteo1
     ports:
