@@ -2,18 +2,17 @@
 namespace App\Controllers;
 use Dotenv\Dotenv;
 use App\Models\Modelo_Temperatura;
+use App\Models\Modelo_Presion;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 use App\Models\Database;
 
-class Controller_Luismi
-{
+class Controller_Luismi{
     private $dotenv;
     private $twig;
     private $model;
 
-    public function __construct()
-    {
+    public function __construct(){
         $dotenv = Dotenv::createImmutable(__DIR__ . "/../..");
         $dotenv->load();
         
@@ -26,13 +25,10 @@ class Controller_Luismi
 
         $loader = new FilesystemLoader(__DIR__ . "/../Views");
         $this->twig = new Environment($loader);
-
         $this->model = new Database($hostname, $port, $dbname, $dbuser, $dbpassword);
     }
 
-
-    public function historicoTemperatura($request)
-    {
+    public function historicoTemperatura($request){
         try {
             $datosGrafico = Modelo_Temperatura::obtenerTemperaturas30Dias();
             $ultimaLectura = Modelo_Temperatura::obtenerUltimaTemperatura();
@@ -47,6 +43,24 @@ class Controller_Luismi
         } catch (\Exception $e) {
             error_log("Error en historicoTemperatura: " . $e->getMessage());
             echo "Error al cargar los datos de temperatura: " . $e->getMessage();
+        }
+    }
+
+    public function historicoPresion($request){
+        try {
+            $datosGrafico = Modelo_Presion::obtenerPresiones30Dias();
+            $ultimaLectura = Modelo_Presion::obtenerUltimaPresion();
+            $ultimaPresion = $ultimaLectura ? $ultimaLectura->toArray() : null;
+
+            echo $this->twig->render('presion_historico.html.twig', [
+                'titulo' => 'Histórico de Presión Atmosférica - Últimos 30 días',
+                'presiones' => $datosGrafico,
+                'ultimaPresion' => $ultimaPresion
+            ]);
+
+        } catch (\Exception $e) {
+            error_log("Error en historicoPresion: " . $e->getMessage());
+            echo "Error al cargar los datos de presión: " . $e->getMessage();
         }
     }
 }
