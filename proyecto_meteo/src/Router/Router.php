@@ -8,12 +8,15 @@ class Router
 
     public function __construct()
     {
-        //$this->rutas['/'] = ['controller' => 'Controller', 'action' => 'index'];
+        $this->rutas['/'] = ['controller' => 'Controller', 'action' => 'index'];
         $this->rutas['/testdb'] = ['controller' => 'Controller','action' => 'testDB'];
         
         //Rutas Victor
-        $this->rutas['/'] = ['controller' => 'Controller_victor', 'action' => 'index'];
-        $this->rutas['/datos'] = ['controller' => 'Controller_victor','action' => 'datos'];
+        //$this->rutas['/'] = ['controller' => 'Controller_victor_vistas', 'action' => 'index'];
+        $this->rutas['/about'] = ['controller' => 'Controller_victor_about','action' => 'about'];
+        $this->rutas['/datos'] = ['controller' => 'Controller_victor_datos','action' => 'datos'];
+
+        
 
 
 
