@@ -1,138 +1,92 @@
-{# filepath: c:\Users\luism\Desktop\daw\2daw\Proyecto Intermodular (PIMD)\RepositorioProyecto\Proyecto-Meteorolog-a-GRUPO1\proyecto_meteo\src\Views\presion_historico.html.twig #}
 {% extends "base.html.twig" %}
-
 {% block content %}
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<section class="container my-5">
+<div class="container my-5">
     
-    <h1 class="text-center mb-5"><i class="bi bi-speedometer2"></i> {{ titulo }}</h1>
+    <h1 class="text-center mb-4">
+        <i class="bi bi-speedometer2"></i> Histórico de Presión Atmosférica - Últimos 30 días
+    </h1>
 
-    <!-- Última Lectura -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> Última Lectura Registrada</h5>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-clipboard-data"></i> Última Lectura Registrada
+        </div>
+        <div class="card-body text-center">
+            {% if ultimaPresion %}
+                <h2 class="text-primary">{{ ultimaPresion.presion|number_format(2, ',', '.') }} hPa</h2>
+                <p class="text-muted">
+                    <i class="bi bi-calendar-event"></i> {{ ultimaPresion.fechaSistema|date('d/m/Y H:i') }}
+                </p>
+                
+                <div class="row">
+                    <div class="col-md-3">
+                        <span class="badge bg-danger">
+                            <i class="bi bi-thermometer-half"></i> Temperatura: {{ ultimaPresion.temperatura }}°C
+                        </span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="badge bg-info">
+                            <i class="bi bi-droplet"></i> Humedad: {{ ultimaPresion.humedad }}%
+                        </span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="badge bg-success">
+                            <i class="bi bi-wind"></i> Viento: {{ ultimaPresion.viento }} km/h
+                        </span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="badge bg-primary">
+                            <i class="bi bi-cloud-rain"></i> Lluvia: {{ ultimaPresion.lluvia ?? 'N/A' }} mm
+                        </span>
+                    </div>
                 </div>
-                <div class="card-body text-center">
-                    {% if ultimaPresion %}
-                        <h2 class="display-1 fw-bold text-primary">
-                            {{ ultimaPresion.presion|number_format(2, ',', '.') }} hPa
-                        </h2>
-                        <p class="text-muted fs-5 mb-4">
-                            <i class="bi bi-calendar-event"></i> {{ ultimaPresion.fechaSistema|date('d/m/Y H:i') }}
-                        </p>
-                        
-                        <div class="row text-center">
-                            <div class="col-md-3 mb-3">
-                                <span class="badge bg-danger fs-6 p-3">
-                                    <i class="bi bi-thermometer-half"></i> Temperatura: {{ ultimaPresion.temperatura }}°C
-                                </span>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <span class="badge bg-info fs-6 p-3">
-                                    <i class="bi bi-droplet"></i> Humedad: {{ ultimaPresion.humedad }}%
-                                </span>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <span class="badge bg-success fs-6 p-3">
-                                    <i class="bi bi-wind"></i> Viento: {{ ultimaPresion.viento }} km/h
-                                </span>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <span class="badge bg-primary fs-6 p-3">
-                                    <i class="bi bi-cloud-rain"></i> Lluvia: {{ ultimaPresion.lluvia ?? 'N/A' }} mm
-                                </span>
-                            </div>
-                        </div>
-                    {% else %}
-                        <p class="text-muted fs-5"> No hay datos disponibles</p>
-                    {% endif %}
-                </div>
-            </div>
+            {% else %}
+                <p class="text-muted">No hay datos disponibles</p>
+            {% endif %}
         </div>
     </div>
 
-    <!-- Gráfico -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-graph-up"></i> Evolución de la Presión Atmosférica</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="graficoPresion" height="100"></canvas>
-                </div>
-            </div>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-graph-up"></i> Evolución de la Presión Atmosférica
+        </div>
+        <div class="card-body">
+            <canvas id="graficoPresion"></canvas>
         </div>
     </div>
 
-    <!-- Info -->
-    <div class="row">
-        <div class="col-12">
-            <div class="alert alert-info">
-                <strong><i class="bi bi-info-circle"></i> Información:</strong> Los datos mostrados corresponden a las últimas mediciones de presión atmosférica de la estación meteorológica del IES Gregorio Prieto (últimos 30 días).
-            </div>
-        </div>
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> Los datos mostrados corresponden a las últimas mediciones de presión atmosférica de la estación meteorológica del IES Gregorio Prieto (últimos 30 días).
     </div>
-
-</section>
+</div>
 
 <script>
     const datosPresion = {{ presiones|json_encode|raw }};
+    const ctx = document.getElementById('graficoPresion').getContext('2d');
     
-    if (datosPresion && datosPresion.length > 0) {
-        const ctx = document.getElementById('graficoPresion').getContext('2d');
-        
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: datosPresion.map(d => d.fecha),
-                datasets: [{
-                    label: 'Presión (hPa)',
-                    data: datosPresion.map(d => parseFloat(d.presion)),
-                    borderColor: '#FF6384',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        title: {
-                            display: true,
-                            text: 'Presión (hPa)'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Fecha'
-                        },
-                        ticks: {
-                            maxRotation: 45,
-                            minRotation: 45
-                        }
-                    }
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: datosPresion.map(d => d.fecha),
+            datasets: [{
+                label: 'Presión (hPa)',
+                data: datosPresion.map(d => parseFloat(d.presion)),
+                borderColor: '#FF6384',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: false
                 }
             }
-        });
-    } else {
-        document.getElementById('graficoPresion').parentElement.innerHTML = 
-            '<div class="alert alert-warning"> No hay datos disponibles</div>';
-    }
+        }
+    });
 </script>
-
 {% endblock %}

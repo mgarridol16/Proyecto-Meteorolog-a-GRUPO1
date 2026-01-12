@@ -1,14 +1,8 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Capsule\Manager as Capsule;
-
-
-class Database
-{
-    public function __construct($hostname, $port, $dbname, $dbuser, $dbpassword)
-    {
+class Database{
+    public function __construct($hostname, $port, $dbname, $dbuser, $dbpassword){
         try {
             $capsule = new Capsule;
 

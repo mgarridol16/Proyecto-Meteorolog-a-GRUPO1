@@ -1,12 +1,10 @@
 <?php
 namespace App\Controllers;
 use Dotenv\Dotenv;
-use App\Models\Modelo_Temperatura;
-use App\Models\Modelo_Presion;
+use App\Models\Modelo_Datos;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 use App\Models\Database;
-
 class Controller_Luismi{
     private $dotenv;
     private $twig;
@@ -15,7 +13,6 @@ class Controller_Luismi{
     public function __construct(){
         $dotenv = Dotenv::createImmutable(__DIR__ . "/../..");
         $dotenv->load();
-        
         $hostname = $_ENV['DB_HOST'];
         $port = $_ENV['DB_PORT'];
         $dbname = $_ENV['DB_DATABASE'];
@@ -29,38 +26,24 @@ class Controller_Luismi{
     }
 
     public function historicoTemperatura($request){
-        try {
-            $datosGrafico = Modelo_Temperatura::obtenerTemperaturas30Dias();
-            $ultimaLectura = Modelo_Temperatura::obtenerUltimaTemperatura();
-            $ultimaTemp = $ultimaLectura ? $ultimaLectura->toArray() : null;
-
-            echo $this->twig->render('temperatura_historico.html.twig', [
-                'titulo' => 'Histórico de Temperatura - Últimos 30 días',
-                'temperaturas' => $datosGrafico,
-                'ultimaTemp' => $ultimaTemp
-            ]);
-
-        } catch (\Exception $e) {
-            error_log("Error en historicoTemperatura: " . $e->getMessage());
-            echo "Error al cargar los datos de temperatura: " . $e->getMessage();
-        }
-    }
+    $ultimaTemp = Modelo_Datos::obtenerUltimaTemperatura();
+    $temperaturas = Modelo_Datos::obtenerTemperaturas30Dias();
+    
+    echo $this->twig->render('temperatura_historico.html.twig', [
+        'titulo' => 'Histórico de Temperatura - Últimos 30 días',
+        'temperaturas' => $temperaturas,
+        'ultimaTemp' => $ultimaTemp
+    ]);
+}
 
     public function historicoPresion($request){
-        try {
-            $datosGrafico = Modelo_Presion::obtenerPresiones30Dias();
-            $ultimaLectura = Modelo_Presion::obtenerUltimaPresion();
-            $ultimaPresion = $ultimaLectura ? $ultimaLectura->toArray() : null;
-
-            echo $this->twig->render('presion_historico.html.twig', [
-                'titulo' => 'Histórico de Presión Atmosférica - Últimos 30 días',
-                'presiones' => $datosGrafico,
-                'ultimaPresion' => $ultimaPresion
-            ]);
-
-        } catch (\Exception $e) {
-            error_log("Error en historicoPresion: " . $e->getMessage());
-            echo "Error al cargar los datos de presión: " . $e->getMessage();
-        }
-    }
+    $ultimaPresion = Modelo_Datos::obtenerUltimaPresion();
+    $presiones = Modelo_Datos::obtenerPresiones30Dias();
+    
+    echo $this->twig->render('presion_historico.html.twig', [
+        'titulo' => 'Histórico de Presión Atmosférica - Últimos 30 días',
+        'presiones' => $presiones,
+        'ultimaPresion' => $ultimaPresion
+    ]);
+}
 }
