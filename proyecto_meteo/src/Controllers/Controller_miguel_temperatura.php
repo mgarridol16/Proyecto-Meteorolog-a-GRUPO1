@@ -38,36 +38,31 @@ class Controller_miguel_temperatura
 
   public function historicoTemperatura($request)
   {
+    $ultimaTemperatura = Modelo_temperatura::obtenerUltima();
+
     $fechaInicio = $request['fechaInicio'] ?? null;
     $fechaFin = $request['fechaFin'] ?? null;
 
     if ($fechaInicio && $fechaFin) {
-      $temperaturaEntreFechas = Modelo_temperatura::buscarEntreFechas($fechaInicio, $fechaFin);
-      $estadisticasEntreFechas = Modelo_temperatura::obtenerEstadisticas($fechaInicio, $fechaFin);
+      // Cuando hay filtro: mostrar temperaturas del rango filtrado
+      $registros = Modelo_temperatura::buscarEntreFechas($fechaInicio, $fechaFin);
+      $stats = Modelo_temperatura::obtenerEstadisticas($fechaInicio, $fechaFin);
+      $temperaturasSemana = Modelo_temperatura::obtenerTemperaturasPorDia($fechaInicio, $fechaFin);
+    } else {
+      // Sin filtro: mostrar últimos 30 días y semana actual
+      $registros = Modelo_temperatura::obtenerTemperaturas30Dias();
+      $stats = null;
+      $temperaturasSemana = Modelo_temperatura::obtenerTemperaturasSemana(); // Semana actual
     }
-
-    $limiteFecha = $request['limiteFecha'] ?? null;
-    if ($limiteFecha) {
-      $temperaturaHastaFecha = Modelo_temperatura::listarConLimite($limiteFecha);
-    }
-
-    $fechaBuscada = $request['fechaBuscada'] ?? null;
-    if ($fechaBuscada) {
-      $temperaturaPorFecha = Modelo_temperatura::buscarPorFecha($fechaBuscada);
-    }
-
-    $todasLasTemperaturas = Modelo_temperatura::listarTodo();
-    $ultimaTemperatura = Modelo_temperatura::obtenerUltima();
-    $temperaturas30Dias = Modelo_temperatura::obtenerTemperaturas30Dias();
 
     echo $this->twig->render('miguel_temperatura.html.twig', [
-      'temperaturaEntreFechas' => $temperaturaEntreFechas ?? null,
-      'estadisticasEntreFechas' => $estadisticasEntreFechas ?? null,
-      'temperaturaHastaFecha' => $temperaturaHastaFecha ?? null,
-      'temperaturaPorFecha' => $temperaturaPorFecha ?? null,
-      'todasLasTemperaturas' => $todasLasTemperaturas,
+      'todasLasTemperaturas' => $registros,
+      'temperaturas30Dias' => $registros,
       'ultimaTemperatura' => $ultimaTemperatura,
-      'temperaturas30Dias' => $temperaturas30Dias
+      'temperaturasSemana' => $temperaturasSemana,
+      'estadisticasEntreFechas' => $stats,
+      'fechaInicio' => $fechaInicio,
+      'fechaFin' => $fechaFin
     ]);
   }
 }
