@@ -11,7 +11,7 @@ use Twig\Environment;
 
 use App\Models\Database;
 
-class Controller_victor
+class Controller_victor_datos
 {
     private $dotenv;
     private $twig;
@@ -33,12 +33,6 @@ class Controller_victor
 
         $this->model = new Database($hostname, $port, $dbname, $dbuser, $dbpassword);
     }
-
-    public function index()
-    {
-        echo $this->twig->render("index.html.twig");
-    }
-
 
     public function datos($get_info)
     {

@@ -41,3 +41,24 @@ footer{
 footer span{
     color: white;
 }
+
+
+/* ABOUT */
+.contenedor {
+    width: 100%;
+    height: 225px; 
+    overflow: hidden; 
+    position: relative;
+}
+
+.contenedor img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    object-position: top; 
+}
+
+.card-container{
+    flex-grow: 1;
+    overflow: hidden;
+}
