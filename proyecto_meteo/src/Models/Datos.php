@@ -12,7 +12,7 @@ class Datos extends Model{
     protected $primaryKey = 'fechaSistema';
 
     protected $keyType = 'string';    // Le dice que la clave no es un número
-    public $incrementing = false;     // Le dice que no intente sumarle +1
+    public $incrementing = false;     
 
     public $timestamps = false;
 
