@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Datos extends Model{
     protected $table = "datos";
 
-    protected $primaryKey = 'fechaSistema';
+    // protected $primaryKey = 'id';
 
     public $timestamps = false;
 
