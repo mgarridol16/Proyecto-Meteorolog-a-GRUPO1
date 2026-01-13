@@ -2,12 +2,12 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Capsule\Manager as DB;
-class Modelo_Datos extends Model{
+class Modelo_Datos extends Model
+{
     protected $table = "datos";
     protected $primaryKey = 'fechaSistema';
     public $timestamps = false;
     public $incrementing = false;
-    
     protected $fillable = [
         "fechaSistema",
         "temperatura",
@@ -34,6 +34,18 @@ class Modelo_Datos extends Model{
         return DB::connection()->select($sql);
     }
 
+    public static function obtenerTemperaturasTabla($fechaDesde = null, $fechaHasta = null){
+        $query = self::select('fechaSistema', 'temperatura', 'humedad', 'presion', 'viento', 'lluvia')
+                    ->orderBy('fechaSistema', 'DESC');
+        if ($fechaDesde) {
+            $query->where('fechaSistema', '>=', $fechaDesde);
+        }
+        if ($fechaHasta) {
+            $query->where('fechaSistema', '<=', $fechaHasta);
+        }
+        return $query->limit(20)->get();
+    }
+
     public static function obtenerUltimaPresion(){
         $registro = self::orderBy('fechaSistema', 'DESC')->first();
         if ($registro) {
@@ -49,5 +61,17 @@ class Modelo_Datos extends Model{
                 WHERE fechaSistema >= DATE_SUB(NOW(), INTERVAL 30 DAY)
                 ORDER BY fechaSistema ASC";
         return DB::connection()->select($sql);
+    }
+
+    public static function obtenerPresionesTabla($fechaDesde = null, $fechaHasta = null){
+        $query = self::select('fechaSistema', 'temperatura', 'humedad', 'presion', 'viento', 'lluvia')
+                    ->orderBy('fechaSistema', 'DESC');
+        if ($fechaDesde) {
+            $query->where('fechaSistema', '>=', $fechaDesde);
+        }
+        if ($fechaHasta) {
+            $query->where('fechaSistema', '<=', $fechaHasta);
+        }
+        return $query->limit(50)->get();
     }
 }

@@ -9,6 +9,7 @@ class Controller_Luismi{
     private $dotenv;
     private $twig;
     private $model;
+    private $modeloDatos;
 
     public function __construct(){
         $dotenv = Dotenv::createImmutable(__DIR__ . "/../..");
@@ -22,28 +23,48 @@ class Controller_Luismi{
 
         $loader = new FilesystemLoader(__DIR__ . "/../Views");
         $this->twig = new Environment($loader);
+
         $this->model = new Database($hostname, $port, $dbname, $dbuser, $dbpassword);
+        $this->modeloDatos = new Modelo_Datos();
     }
 
     public function historicoTemperatura($request){
-    $ultimaTemp = Modelo_Datos::obtenerUltimaTemperatura();
-    $temperaturas = Modelo_Datos::obtenerTemperaturas30Dias();
-    
-    echo $this->twig->render('temperatura_historico.html.twig', [
-        'titulo' => 'Histórico de Temperatura - Últimos 30 días',
-        'temperaturas' => $temperaturas,
-        'ultimaTemp' => $ultimaTemp
-    ]);
-}
+        $ultimaTemp = Modelo_Datos::obtenerUltimaTemperatura();
+        $temperaturas = Modelo_Datos::obtenerTemperaturas30Dias();
+        $fechaDesde = $_GET['fecha_desde'] ?? null;
+        $fechaHasta = $_GET['fecha_hasta'] ?? null;
+        $tablaDatos = Modelo_Datos::obtenerTemperaturasTabla($fechaDesde, $fechaHasta);
+        if ($ultimaTemp) {
+            $ultimaTemp = $ultimaTemp->toArray();
+        }
+        
+        echo $this->twig->render('temperatura_historico.html.twig', [
+            'titulo' => 'Histórico de Temperatura - Últimos 30 días',
+            'temperaturas' => $temperaturas,
+            'ultimaTemp' => $ultimaTemp,
+            'tablaDatos' => $tablaDatos,
+            'fechaDesde' => $fechaDesde,
+            'fechaHasta' => $fechaHasta
+        ]);
+    }
 
     public function historicoPresion($request){
-    $ultimaPresion = Modelo_Datos::obtenerUltimaPresion();
-    $presiones = Modelo_Datos::obtenerPresiones30Dias();
-    
-    echo $this->twig->render('presion_historico.html.twig', [
-        'titulo' => 'Histórico de Presión Atmosférica - Últimos 30 días',
-        'presiones' => $presiones,
-        'ultimaPresion' => $ultimaPresion
-    ]);
-}
+        $ultimaPresion = Modelo_Datos::obtenerUltimaPresion();
+        $presiones = Modelo_Datos::obtenerPresiones30Dias();
+        $fechaDesde = $_GET['fecha_desde'] ?? null;
+        $fechaHasta = $_GET['fecha_hasta'] ?? null;
+        $tablaDatos = Modelo_Datos::obtenerPresionesTabla($fechaDesde, $fechaHasta);
+        if ($ultimaPresion) {
+            $ultimaPresion = $ultimaPresion->toArray();
+        }
+        
+        echo $this->twig->render('presion_historico.html.twig', [
+            'titulo' => 'Histórico de Presión Atmosférica - Últimos 30 días',
+            'presiones' => $presiones,
+            'ultimaPresion' => $ultimaPresion,
+            'tablaDatos' => $tablaDatos,
+            'fechaDesde' => $fechaDesde,
+            'fechaHasta' => $fechaHasta
+        ]);
+    }
 }

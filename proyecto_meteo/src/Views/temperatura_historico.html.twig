@@ -5,87 +5,100 @@
 <div class="container my-5">
     
     <h1 class="text-center mb-4">
-        <i class="bi bi-thermometer-half"></i> Histórico de Temperatura - Últimos 30 días
+        <i class="bi bi-thermometer-half"></i> Histórico de Temperatura
     </h1>
 
+    <!-- Última Lectura -->
     <div class="card mb-4">
-        <div class="card-header">
-            <i class="bi bi-clipboard-data"></i> Última Lectura Registrada
-        </div>
+        <div class="card-header">Última Lectura</div>
         <div class="card-body text-center">
             {% if ultimaTemp %}
                 <h2 class="text-primary">{{ ultimaTemp.temperatura|number_format(1, ',', '.') }}°C</h2>
-                <p class="text-muted">
-                    <i class="bi bi-calendar-event"></i> {{ ultimaTemp.fechaSistema|date('d/m/Y H:i') }}
-                </p>
-                
-                <div class="row">
-                    <div class="col-md-3">
-                        <span class="badge bg-info">
-                            <i class="bi bi-droplet"></i> Humedad: {{ ultimaTemp.humedad }}%
-                        </span>
-                    </div>
-                    <div class="col-md-3">
-                        <span class="badge bg-warning">
-                            <i class="bi bi-speedometer2"></i> Presión: {{ ultimaTemp.presion }} hPa
-                        </span>
-                    </div>
-                    <div class="col-md-3">
-                        <span class="badge bg-success">
-                            <i class="bi bi-wind"></i> Viento: {{ ultimaTemp.viento }} km/h
-                        </span>
-                    </div>
-                    <div class="col-md-3">
-                        <span class="badge bg-primary">
-                            <i class="bi bi-cloud-rain"></i> Lluvia: {{ ultimaTemp.lluvia ?? 'N/A' }} mm
-                        </span>
-                    </div>
-                </div>
+                <p>{{ ultimaTemp.fechaSistema|date('d/m/Y H:i') }}</p>
             {% else %}
-                <p class="text-muted">No hay datos disponibles</p>
+                <p>No hay datos</p>
             {% endif %}
         </div>
     </div>
 
+    <!-- Gráfico -->
     <div class="card mb-4">
-        <div class="card-header">
-            <i class="bi bi-graph-up"></i> Evolución de la Temperatura
-        </div>
+        <div class="card-header">Gráfico</div>
         <div class="card-body">
-            <canvas id="graficoTemperatura"></canvas>
+            <canvas id="grafico"></canvas>
         </div>
     </div>
 
-    <div class="alert alert-info">
-        <i class="bi bi-info-circle"></i> Los datos mostrados corresponden a las últimas mediciones de la estación meteorológica del IES Gregorio Prieto (últimos 30 días).
+    <!-- Filtro -->
+    <div class="card mb-4">
+        <div class="card-header">Filtrar por Fechas</div>
+        <div class="card-body">
+            <form method="GET" action="/temperatura" class="row">
+                <div class="col-5">
+                    <input type="date" class="form-control" name="fecha_desde" value="{{ fechaDesde }}">
+                </div>
+                <div class="col-5">
+                    <input type="date" class="form-control" name="fecha_hasta" value="{{ fechaHasta }}">
+                </div>
+                <div class="col-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </form>
+        </div>
     </div>
+
+    <!-- Tabla -->
+    <div class="card mb-4">
+        <div class="card-header">Datos Históricos</div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Temperatura (°C)</th>
+                        <th>Humedad (%)</th>
+                        <th>Presión (hPa)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dato in tablaDatos %}
+                    <tr>
+                        <td>{{ dato.fechaSistema|date('d/m/Y H:i') }}</td>
+                        <td>{{ dato.temperatura|number_format(1, ',', '.') }}</td>
+                        <td>{{ dato.humedad|number_format(1, ',', '.') }}</td>
+                        <td>{{ dato.presion|number_format(2, ',', '.') }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">No hay datos</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    const datosTemperatura = {{ temperaturas|json_encode|raw }};
-    const ctx = document.getElementById('graficoTemperatura').getContext('2d');
-
+    const datos = {{ temperaturas|json_encode|raw }};
+    const ctx = document.getElementById('grafico').getContext('2d');
+    
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: datosTemperatura.map(d => d.fecha),
+            labels: datos.map(d => d.fecha),
             datasets: [{
                 label: 'Temperatura (°C)',
-                data: datosTemperatura.map(d => parseFloat(d.temperatura)),
+                data: datos.map(d => parseFloat(d.temperatura)),
                 borderColor: '#95BF39',
                 backgroundColor: 'rgba(149, 191, 57, 0.2)',
                 borderWidth: 2,
-                tension: 0.4,
                 fill: true
             }]
         },
         options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: false
-                }
-            }
+            responsive: true
         }
     });
 </script>
