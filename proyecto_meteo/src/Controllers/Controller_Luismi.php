@@ -1,7 +1,7 @@
 <?php
 namespace App\Controllers;
 use Dotenv\Dotenv;
-use App\Models\Modelo_Datos;
+use App\Models\Datos;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 use App\Models\Database;
@@ -9,7 +9,6 @@ class Controller_Luismi{
     private $dotenv;
     private $twig;
     private $model;
-    private $modeloDatos;
 
     public function __construct(){
         $dotenv = Dotenv::createImmutable(__DIR__ . "/../..");
@@ -23,17 +22,18 @@ class Controller_Luismi{
 
         $loader = new FilesystemLoader(__DIR__ . "/../Views");
         $this->twig = new Environment($loader);
-
         $this->model = new Database($hostname, $port, $dbname, $dbuser, $dbpassword);
-        $this->modeloDatos = new Modelo_Datos();
     }
 
     public function historicoTemperatura($request){
-        $ultimaTemp = Modelo_Datos::obtenerUltimaTemperatura();
-        $temperaturas = Modelo_Datos::obtenerTemperaturas30Dias();
+        $ultimaTemp = Datos::obtenerUltimaTemperatura();
+        $temperaturas = Datos::obtenerTemperaturas30Dias();
+        
         $fechaDesde = $_GET['fecha_desde'] ?? null;
         $fechaHasta = $_GET['fecha_hasta'] ?? null;
-        $tablaDatos = Modelo_Datos::obtenerTemperaturasTabla($fechaDesde, $fechaHasta);
+        
+        $tablaDatos = Datos::obtenerTemperaturasTabla($fechaDesde, $fechaHasta);
+        
         if ($ultimaTemp) {
             $ultimaTemp = $ultimaTemp->toArray();
         }
@@ -48,12 +48,16 @@ class Controller_Luismi{
         ]);
     }
 
+
     public function historicoPresion($request){
-        $ultimaPresion = Modelo_Datos::obtenerUltimaPresion();
-        $presiones = Modelo_Datos::obtenerPresiones30Dias();
+        $ultimaPresion = Datos::obtenerUltimaPresion();
+        $presiones = Datos::obtenerPresiones30Dias();
+        
         $fechaDesde = $_GET['fecha_desde'] ?? null;
         $fechaHasta = $_GET['fecha_hasta'] ?? null;
-        $tablaDatos = Modelo_Datos::obtenerPresionesTabla($fechaDesde, $fechaHasta);
+        
+        $tablaDatos = Datos::obtenerPresionesTabla($fechaDesde, $fechaHasta);
+        
         if ($ultimaPresion) {
             $ultimaPresion = $ultimaPresion->toArray();
         }

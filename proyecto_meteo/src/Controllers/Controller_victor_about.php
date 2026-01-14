@@ -2,15 +2,19 @@
 
 namespace App\Controllers;
 
+
+use Dotenv\Dotenv;
+use App\Models\Datos;
+
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
-use App\Models\Database;
-use Dotenv\Dotenv;
 
-class Controller
+use App\Models\Database;
+
+class Controller_victor_about
 {
     private $dotenv;
-    private Environment $twig;
+    private $twig;
     private $model;
 
     public function __construct()
@@ -30,19 +34,9 @@ class Controller
         $this->model = new Database($hostname, $port, $dbname, $dbuser, $dbpassword);
     }
 
-    public function index()
-    {
-        echo $this->twig->render("indice.html.twig");
+    public function about(){
+        echo $this->twig->render("about.html.twig");
     }
+    
 
-
-    public function testDB()
-    {
-        try {
-            \Illuminate\Database\Capsule\Manager::connection()->getPdo();
-            echo " Conexión correcta a la base de datos.";
-        } catch (\Exception $e) {
-            echo " Error al conectar: " . $e->getMessage();
-        }
-    }
 }
