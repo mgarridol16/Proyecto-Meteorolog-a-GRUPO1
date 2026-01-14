@@ -1,0 +1,104 @@
+{% extends "base.html.twig" %}
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container my-5">
+    
+    <h1 class="text-center mb-4">
+        <i class="bi bi-speedometer2"></i> Histórico de Presión Atmosférica
+    </h1>
+
+    <!-- Última Lectura -->
+    <div class="card mb-4">
+        <div class="card-header">Última Lectura</div>
+        <div class="card-body text-center">
+            {% if ultimaPresion %}
+                <h2 class="text-primary">{{ ultimaPresion.presion|number_format(2, ',', '.') }} hPa</h2>
+                <p>{{ ultimaPresion.fechaSistema|date('d/m/Y H:i') }}</p>
+            {% else %}
+                <p>No hay datos</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Gráfico -->
+    <div class="card mb-4">
+        <div class="card-header">Gráfico</div>
+        <div class="card-body">
+            <canvas id="grafico"></canvas>
+        </div>
+    </div>
+
+    <!-- Filtro -->
+    <div class="card mb-4">
+        <div class="card-header">Filtrar por Fechas</div>
+        <div class="card-body">
+            <form method="GET" action="/presion" class="row">
+                <div class="col-5">
+                    <input type="date" class="form-control" name="fecha_desde" value="{{ fechaDesde }}">
+                </div>
+                <div class="col-5">
+                    <input type="date" class="form-control" name="fecha_hasta" value="{{ fechaHasta }}">
+                </div>
+                <div class="col-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="card mb-4">
+        <div class="card-header">Datos Históricos</div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Presión (hPa)</th>
+                        <th>Temperatura (°C)</th>
+                        <th>Humedad (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dato in tablaDatos %}
+                    <tr>
+                        <td>{{ dato.fechaSistema|date('d/m/Y H:i') }}</td>
+                        <td>{{ dato.presion|number_format(2, ',', '.') }}</td>
+                        <td>{{ dato.temperatura|number_format(1, ',', '.') }}</td>
+                        <td>{{ dato.humedad|number_format(1, ',', '.') }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">No hay datos</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const datos = {{ presiones|json_encode|raw }};
+    const ctx = document.getElementById('grafico').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: datos.map(d => d.fecha),
+            datasets: [{
+                label: 'Presión (hPa)',
+                data: datos.map(d => parseFloat(d.presion)),
+                borderColor: '#FF6384',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderWidth: 2,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>
+{% endblock %}
