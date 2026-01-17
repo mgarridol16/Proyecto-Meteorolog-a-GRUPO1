@@ -39,8 +39,20 @@ class Controller_victor_humedad
     }
     
     public function pedirHumedad(){
-        $datos = Datos::all();
-        $fecha = $datos[0]["fechaSistema"];
-        echo $fecha;
+        $datos = Datos::all("fechaSistema", "humedad");
+        return $datos;
+    }
+
+    public function pedirHumedad30Dias(){
+        $datos = $this->pedirHumedad();
+        
+    }
+
+    public function humedad(){
+        $datos = $this->pedirHumedad();
+
+        echo $this->twig->render("humedad.html.twig", [
+            "datos" => $datos
+        ]);
     }
 }
