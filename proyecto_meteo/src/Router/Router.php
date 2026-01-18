@@ -16,6 +16,7 @@ class Router
         $this->rutas['/about'] = ['controller' => 'Controller_victor_about','action' => 'about'];
         $this->rutas['/datos'] = ['controller' => 'Controller_victor_datos','action' => 'datos'];
         $this->rutas['/humedad'] = ['controller' => 'Controller_victor_humedad','action' => 'humedad'];
+        $this->rutas['/filtrarHumedad'] = ['controller' => 'Controller_victor_humedad','action' => 'filtrarHumedad'];
 
         
 

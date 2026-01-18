@@ -3,6 +3,34 @@
 {% block content %}
 <div class="container py-5">
 
+  {% set ultimaLectura = datos|last %}
+
+  <!-- Última lectura -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body text-center">
+      <h6 class="text-muted mb-2">Última lectura registrada</h6>
+
+      {% if ultimaLectura %}
+        <div class="d-flex justify-content-center align-items-center gap-4">
+          <div>
+            <span class="fs-3 fw-bold text-primary">
+              {{ ultimaLectura.humedad }} %
+            </span>
+            <div class="text-muted small">Humedad</div>
+          </div>
+          <div>
+            <span class="fs-6">
+              {{ ultimaLectura.fechaSistema }}
+            </span>
+            <div class="text-muted small">Fecha</div>
+          </div>
+        </div>
+      {% else %}
+        <p class="text-muted mb-0">No hay lecturas disponibles</p>
+      {% endif %}
+    </div>
+  </div>
+
   <div class="card shadow-sm">
 
     <!-- Header -->
@@ -19,6 +47,40 @@
         <canvas id="humedadChart" height="120"></canvas>
       </div>
 
+    <!-- Filtro por fechas -->
+    <form method="post" action="/filtrarHumedad" class="card mb-3">
+      <div class="card-body">
+
+        <h6 class="mb-3 fw-semibold text-muted">
+          Filtrar por Fechas
+        </h6>
+
+        <div class="row g-2 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label small">Desde</label>
+            <input type="date" name="fechaDesde" class="form-control">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small">Hasta</label>
+            <input type="date" name="fechaHasta" class="form-control">
+          </div>
+
+          <div class="col-md-4 d-grid">
+            <button
+              type="submit"
+              class="btn btn-primary"
+            >
+              Filtrar
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </form>
+
+
+
       <!-- Table -->
       <div class="table-responsive">
         <table class="table table-hover align-middle text-center">
@@ -28,7 +90,7 @@
               <th scope="col">Humedad (%)</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="tablaHumedad">
             {% for dato in datos %}
               <tr
                 data-fecha="{{ dato.fechaSistema }}"
@@ -56,4 +118,23 @@
   </div>
 
 </div>
+
+<!-- JS filtro -->
+<script>
+document.getElementById('filtroTabla').addEventListener('keyup', function () {
+  const filtro = this.value.toLowerCase();
+  const filas = document.querySelectorAll('#tablaHumedad tr');
+
+  filas.forEach(fila => {
+    const fecha = fila.dataset.fecha?.toLowerCase() || '';
+    const humedad = fila.dataset.humedad || '';
+
+    if (fecha.includes(filtro) || humedad.includes(filtro)) {
+      fila.style.display = '';
+    } else {
+      fila.style.display = 'none';
+    }
+  });
+});
+</script>
 {% endblock %}
