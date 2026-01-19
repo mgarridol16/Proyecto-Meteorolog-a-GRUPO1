@@ -3,24 +3,20 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div class="container my-5">
-    <h1 class="text-center mb-4">
-        <i class="bi bi-thermometer-half"></i> Histórico de Temperatura
-    </h1>
+    <h1 class="text-center mb-4">Histórico de Temperatura</h1>
 
-    <!-- Última Lectura -->
     <div class="card mb-4">
         <div class="card-header">Última Lectura</div>
         <div class="card-body text-center">
             {% if ultimaTemp %}
-                <h2 class="text-primary">{{ ultimaTemp.temperatura|number_format(1, ',', '.') }}°C</h2>
-                <p>{{ ultimaTemp.fechaSistema|date('d/m/Y H:i') }}</p>
+                <h2>{{ ultimaTemp.temperatura }}°C</h2>
+                <p>{{ ultimaTemp.fechaSistema }}</p>
             {% else %}
                 <p>No hay datos</p>
             {% endif %}
         </div>
     </div>
 
-    <!-- Gráfico -->
     <div class="card mb-4">
         <div class="card-header">Gráfico</div>
         <div class="card-body">
@@ -28,11 +24,10 @@
         </div>
     </div>
 
-    <!-- Filtro -->
     <div class="card mb-4">
         <div class="card-header">Filtrar por Fechas</div>
         <div class="card-body">
-            <form method="GET" action="/temperatura" class="row">
+            <form method="GET" class="row">
                 <div class="col-5">
                     <input type="date" class="form-control" name="fecha_desde" value="{{ fechaDesde }}">
                 </div>
@@ -46,7 +41,6 @@
         </div>
     </div>
 
-    <!-- Tabla -->
     <div class="card mb-4">
         <div class="card-header">Datos Históricos</div>
         <div class="card-body">
@@ -54,50 +48,43 @@
                 <thead>
                     <tr>
                         <th>Fecha</th>
-                        <th>Temperatura (°C)</th>
-                        <th>Humedad (%)</th>
-                        <th>Presión (hPa)</th>
+                        <th>Temp (°C)</th>
+                        <th>Hum (%)</th>
+                        <th>Pres (hPa)</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for dato in tablaDatos %}
                     <tr>
-                        <td>{{ dato.fechaSistema|date('d/m/Y H:i') }}</td>
-                        <td>{{ dato.temperatura|number_format(1, ',', '.') }}</td>
-                        <td>{{ dato.humedad|number_format(1, ',', '.') }}</td>
-                        <td>{{ dato.presion|number_format(2, ',', '.') }}</td>
+                        <td>{{ dato.fechaSistema }}</td>
+                        <td>{{ dato.temperatura }}</td>
+                        <td>{{ dato.humedad }}</td>
+                        <td>{{ dato.presion }}</td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="4" class="text-center">No hay datos</td>
+                        <td colspan="4">No hay datos</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
-
 </div>
+
 <script>
-    const datos = {{ temperaturas|json_encode|raw }};
-    const ctx = document.getElementById('grafico').getContext('2d');
-    
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: datos.map(d => d.fechaSistema),
-            datasets: [{
-                label: 'Temperatura (°C)',
-                data: datos.map(d => parseFloat(d.temperatura)),
-                borderColor: '#95BF39',
-                backgroundColor: 'rgba(149, 191, 57, 0.2)',
-                borderWidth: 2,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true
-        }
-    });
+const datos = {{ temperaturas|json_encode|raw }};
+const ctx = document.getElementById('grafico').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: datos.map(d => d.fechaSistema),
+        datasets: [{
+            label: 'Temperatura (°C)',
+            data: datos.map(d => d.temperatura),
+            borderColor: '#95BF39',
+        }]
+    }
+});
 </script>
 {% endblock %}

@@ -33,9 +33,6 @@ class Controller_Luismi{
         $fechaHasta = $_GET['fecha_hasta'] ?? null;
         $tablaDatos = Datos::obtenerTemperaturasTabla($fechaDesde, $fechaHasta);
         
-        if ($ultimaTemp) {
-            $ultimaTemp = $ultimaTemp->toArray();
-        }
         echo $this->twig->render('temperatura_historico.html.twig', [
             'titulo' => 'Histórico de Temperatura - Últimos 30 días',
             'temperaturas' => $temperaturas,
@@ -54,9 +51,6 @@ class Controller_Luismi{
         $fechaHasta = $_GET['fecha_hasta'] ?? null;
         $tablaDatos = Datos::obtenerPresionesTabla($fechaDesde, $fechaHasta);
         
-        if ($ultimaPresion) {
-            $ultimaPresion = $ultimaPresion->toArray();
-        }
         echo $this->twig->render('presion_historico.html.twig', [
             'titulo' => 'Histórico de Presión Atmosférica - Últimos 30 días',
             'presiones' => $presiones,

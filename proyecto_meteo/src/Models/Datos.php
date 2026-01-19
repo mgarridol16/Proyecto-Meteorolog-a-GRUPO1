@@ -6,7 +6,7 @@ class Datos extends Model{
     // protected $primaryKey = 'id';
     public $timestamps = false;
     protected $fillable = ["temperatura", "presion", "humedad", "viento", "lluvia"];
-    //metodos luismi
+
     public static function obtenerUltimaTemperatura(){
         return self::orderBy('fechaSistema', 'DESC')->first();
     }
@@ -25,18 +25,19 @@ class Datos extends Model{
         if ($fechaHasta) {
             $query->where('fechaSistema', '<=', $fechaHasta);
         }
-        return $query->limit(20)->get();
+        return $query->limit(10)->get();
     }
 
     public static function obtenerUltimaPresion(){
         return self::orderBy('fechaSistema', 'DESC')->first();
     }
+
     public static function obtenerPresiones30Dias(){
         return self::where('fechaSistema', '>=', date('Y-m-d H:i:s', strtotime('-30 days')))
                 ->orderBy('fechaSistema', 'ASC')
                 ->get(['fechaSistema', 'presion']);
     }
-
+    
     public static function obtenerPresionesTabla($fechaDesde = null, $fechaHasta = null){
         $query = self::orderBy('fechaSistema', 'DESC');
         if ($fechaDesde) {
@@ -45,6 +46,6 @@ class Datos extends Model{
         if ($fechaHasta) {
             $query->where('fechaSistema', '<=', $fechaHasta);
         }
-        return $query->limit(20)->get();
+        return $query->limit(10)->get();
     }
 }
