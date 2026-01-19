@@ -1,7 +1,6 @@
 <?php
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Capsule\Manager as DB;
 class Datos extends Model{
     protected $table = "datos";
     // protected $primaryKey = 'id';
@@ -13,17 +12,13 @@ class Datos extends Model{
     }
 
     public static function obtenerTemperaturas30Dias(){
-        $sql = "SELECT DATE_FORMAT(fechaSistema, '%Y-%m-%d %H:%i') as fecha, 
-                    ROUND(temperatura, 2) as temperatura
-                FROM datos 
-                WHERE fechaSistema >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-                ORDER BY fechaSistema ASC";
-        return DB::connection()->select($sql);
+        return self::where('fechaSistema', '>=', date('Y-m-d H:i:s', strtotime('-30 days')))
+                ->orderBy('fechaSistema', 'ASC')
+                ->get(['fechaSistema', 'temperatura']);
     }
 
     public static function obtenerTemperaturasTabla($fechaDesde = null, $fechaHasta = null){
-        $query = self::select('fechaSistema', 'temperatura', 'humedad', 'presion', 'viento', 'lluvia')
-                    ->orderBy('fechaSistema', 'DESC');
+        $query = self::orderBy('fechaSistema', 'DESC');
         if ($fechaDesde) {
             $query->where('fechaSistema', '>=', $fechaDesde);
         }
@@ -36,19 +31,14 @@ class Datos extends Model{
     public static function obtenerUltimaPresion(){
         return self::orderBy('fechaSistema', 'DESC')->first();
     }
-
     public static function obtenerPresiones30Dias(){
-        $sql = "SELECT DATE_FORMAT(fechaSistema, '%Y-%m-%d %H:%i') as fecha, 
-                    ROUND(presion, 2) as presion
-                FROM datos 
-                WHERE fechaSistema >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-                ORDER BY fechaSistema ASC";
-        return DB::connection()->select($sql);
+        return self::where('fechaSistema', '>=', date('Y-m-d H:i:s', strtotime('-30 days')))
+                ->orderBy('fechaSistema', 'ASC')
+                ->get(['fechaSistema', 'presion']);
     }
 
     public static function obtenerPresionesTabla($fechaDesde = null, $fechaHasta = null){
-        $query = self::select('fechaSistema', 'temperatura', 'humedad', 'presion', 'viento', 'lluvia')
-                    ->orderBy('fechaSistema', 'DESC');
+        $query = self::orderBy('fechaSistema', 'DESC');
         if ($fechaDesde) {
             $query->where('fechaSistema', '>=', $fechaDesde);
         }
