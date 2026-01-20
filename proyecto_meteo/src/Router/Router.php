@@ -7,7 +7,7 @@ class Router
     {
         $this->rutas['/'] = ['controller' => 'Controller', 'action' => 'index'];
         $this->rutas['/testdb'] = ['controller' => 'Controller','action' => 'testDB'];
-        
+
         //Rutas Victor
         //$this->rutas['/'] = ['controller' => 'Controller_victor_vistas', 'action' => 'index'];
         $this->rutas['/about'] = ['controller' => 'Controller_victor_about','action' => 'about'];
@@ -15,7 +15,11 @@ class Router
         $this->rutas['/humedad'] = ['controller' => 'Controller_victor_humedad','action' => 'humedad'];
         $this->rutas['/filtrarHumedad'] = ['controller' => 'Controller_victor_humedad','action' => 'filtrarHumedad'];
 
-        
+        //Rutas Miguel
+        $this->rutas['/temperatura'] = ['controller' => 'Controller_miguel_temperatura','action' => 'historicoTemperatura'];
+
+
+
 
         //rutas luismi
         $this->rutas['/temperatura'] = ['controller' => 'Controller_Luismi', 'action' => 'historicoTemperatura'];
@@ -23,7 +27,7 @@ class Router
     }
 
     public function handleRequest()
-    {   
+    {
         error_log($_SERVER["REQUEST_URI"]);
         $ruta = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
