@@ -16,10 +16,7 @@ class Router
         $this->rutas['/filtrarHumedad'] = ['controller' => 'Controller_victor_humedad','action' => 'filtrarHumedad'];
 
         //Rutas Miguel
-        $this->rutas['/temperatura'] = ['controller' => 'Controller_miguel_temperatura','action' => 'historicoTemperatura'];
-
-
-
+        // $this->rutas['/temperatura'] = ['controller' => 'Controller_miguel_temperatura','action' => 'historicoTemperatura'];
 
         //rutas luismi
         $this->rutas['/temperatura'] = ['controller' => 'Controller_Luismi', 'action' => 'historicoTemperatura'];
