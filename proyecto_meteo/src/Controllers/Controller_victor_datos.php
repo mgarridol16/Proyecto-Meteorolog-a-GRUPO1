@@ -58,8 +58,5 @@ class Controller_victor_datos
         }catch (\Exception $e){
             die("Entrada erronea: "  . $e -> getMessage());
         }
-
     }
-
-
 }

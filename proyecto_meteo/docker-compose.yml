@@ -6,14 +6,15 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: estacionmeteo25-26
+
       MYSQL_USER: Meteo1
       MYSQL_PASSWORD: Meteo1
+
     ports:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./Base_de_datos/:/docker-entrypoint-initdb.d/
-
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
