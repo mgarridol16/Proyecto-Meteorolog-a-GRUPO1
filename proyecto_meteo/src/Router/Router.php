@@ -22,6 +22,8 @@ class Router
 
         //Rutas Miguel LLUVIA ACOMULADA
         $this->rutas['/lluviaAcomulada'] = ['controller' => 'Controller_miguel_lluviaAcomulada', 'action' => 'historicoLluviaAcomulada'];
+
+        $this->rutas['/viento'] = ['controller' => 'Controller_miguel_viento', 'action' => 'historicoViento'];
     }
 
     public function handleRequest()

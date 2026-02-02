@@ -169,4 +169,59 @@ class Modelo_temperatura extends Model
 
     return $dias[$diaIngles] ?? $diaIngles;
   }
+
+
+
+  //FUNCIONES PACK 7 -MIGUEL T
+  public static function buscarVientoEntreFechas($inicio, $fin)
+  {
+    // Limpiamos la 'T' del formato HTML para SQL
+    $f_i = str_replace('T', ' ', $inicio);
+    $f_f = str_replace('T', ' ', $fin);
+
+    return self::whereBetween('fechaSistema', [$f_i, $f_f])
+      ->select('fechaSistema', 'viento', 'humedad') // Pedimos solo lo necesario
+      ->orderBy('fechaSistema', 'asc')
+      ->get();
+  }
+
+  public static function obtenerEstadisticasViento($inicio, $fin)
+  {
+    $f_i = str_replace('T', ' ', $inicio);
+    $f_f = str_replace('T', ' ', $fin);
+
+    return self::whereBetween('fechaSistema', [$f_i, $f_f])
+      ->selectRaw('AVG(viento) as viento_medio,
+                     MIN(viento) as viento_minimo,
+                     MAX(viento) as viento_maximo')
+      ->first();
+  }
+
+  public static function obtenerViento30Dias()
+  {
+    $hace30 = date('Y-m-d H:i:s', strtotime('-30 days'));
+
+    return self::where('fechaSistema', '>=', $hace30)
+      ->select('fechaSistema', 'viento')
+      ->orderBy('fechaSistema', 'asc')
+      ->get();
+  }
+
+  public static function obtenerUltimoViento()
+  {
+    return self::orderBy('fechaSistema', 'desc')->first();
+  }
+
+  public static function listarVientoConLimite($n)
+  {
+    return self::orderBy('fechaSistema', 'desc')
+      ->limit($n)
+      ->get()
+      ->reverse(); // Para que el tiempo vaya de izquierda a derecha
+  }
+
+  public static function buscarVientoPorFecha($fecha)
+  {
+    return self::where('fechaSistema', 'like', $fecha . '%')->get();
+  }
 }
