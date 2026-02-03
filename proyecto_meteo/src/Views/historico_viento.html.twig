@@ -1,0 +1,112 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <div class="d-flex align-items-center mb-4">
+        <div class="p-3 bg-secondary bg-opacity-75 rounded-circle me-3 shadow-sm">
+            <i class="fa-solid fa-wind text-white fa-lg"></i>
+        </div>
+        <div>
+            <h2 class="fw-bold mb-0 text-dark">Historial de Velocidad del Viento</h2>
+            <p class="text-muted small mb-0 fw-bold text-uppercase">Registros y ráfagas medidas (km/h)</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4 bg-light">
+        <div class="card-body">
+            <form method="GET" action="/historico-viento" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold">DESDE</label>
+                    <input type="date" name="fecha_inicio" class="form-control" value="{{ filtros.inicio }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold">HASTA</label>
+                    <input type="date" name="fecha_fin" class="form-control" value="{{ filtros.fin }}">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-secondary w-100 shadow-sm">
+                        <i class="fa-solid fa-magnifying-glass me-2"></i>Filtrar Viento
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {# SECCIÓN 2: Gráfica Interactiva #}
+    <div class="card shadow-sm border-0 mb-4 p-3">
+        <div class="card-header bg-white border-0 fw-bold text-secondary">
+            <i class="fa-solid fa-chart-line me-2"></i>Evolución de la Velocidad
+        </div>
+        <div class="card-body" style="height: 300px;">
+            <canvas id="chartViento"></canvas>
+        </div>
+    </div>
+
+    {# SECCIÓN 3: Tabla Histórica #}
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-center">
+                <thead class="table-light text-muted small">
+                    <tr>
+                        <th class="ps-4 text-start">FECHA Y HORA</th>
+                        <th>VELOCIDAD (km/h)</th>
+                        <th>INTENSIDAD</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dato in datos|reverse %}
+                    <tr>
+                        <td class="ps-4 text-start fw-bold text-secondary">{{ dato.fechaSistema|date("d/m/Y H:i") }}</td>
+                        <td class="h5 mb-0 text-dark">{{ dato.viento|number_format(1) }}</td>
+                        <td>
+                            {% if dato.viento < 10 %}
+                                <span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success">Calma</span>
+                            {% elseif dato.viento < 25 %}
+                                <span class="badge rounded-pill bg-warning bg-opacity-10 text-warning border border-warning">Moderado</span>
+                            {% else %}
+                                <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger border border-danger">Fuerte</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="py-5 text-muted">No hay registros de viento para estas fechas.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const ctx = document.getElementById('chartViento').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [{% for d in datos %}"{{ d.fechaSistema|date('d/m H:i') }}",{% endfor %}],
+            datasets: [{
+                label: 'Velocidad (km/h)',
+                data: [{% for d in datos %}{{ d.viento }},{% endfor %}],
+                borderColor: '#6c757d',
+                backgroundColor: 'rgba(108, 117, 125, 0.1)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 3,
+                pointRadius: 3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+});
+</script>
+{% endblock %}

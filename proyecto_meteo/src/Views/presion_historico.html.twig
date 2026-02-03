@@ -1,0 +1,90 @@
+{% extends "base.html.twig" %}
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container py-5">
+    <h1 class="text-center mb-4">Histórico de Presión</h1>
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header">Última Lectura</div>
+        <div class="card-body text-center">
+            {% if ultimaPresion %}
+                <h2>{{ ultimaPresion.presion }} hPa</h2>
+                <p>{{ ultimaPresion.fechaSistema }}</p>
+            {% else %}
+                <p>No hay datos</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">Gráfico</div>
+        <div class="card-body">
+            <canvas id="grafico"></canvas>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">Filtrar por Fechas</div>
+        <div class="card-body">
+            <form method="GET" class="row">
+                <div class="col-5">
+                    <input type="date" class="form-control" name="fecha_desde" value="{{ fechaDesde }}">
+                </div>
+                <div class="col-5">
+                    <input type="date" class="form-control" name="fecha_hasta" value="{{ fechaHasta }}">
+                </div>
+                <div class="col-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">Datos Históricos</div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Pres (hPa)</th>
+                        <th>Temp (°C)</th>
+                        <th>Hum (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dato in tablaDatos %}
+                    <tr>
+                        <td>{{ dato.fechaSistema }}</td>
+                        <td>{{ dato.presion }}</td>
+                        <td>{{ dato.temperatura }}</td>
+                        <td>{{ dato.humedad }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">No hay datos</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+const datos = {{ presiones|json_encode|raw }};
+const ctx = document.getElementById('grafico').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: datos.map(d => d.fechaSistema),
+        datasets: [{
+            label: 'Presión (hPa)',
+            data: datos.map(d => d.presion),
+            borderColor: '#FF6384',
+        }]
+    }
+});
+</script>
+{% endblock %}
