@@ -1,5 +1,5 @@
-/* NAV */
 .borde_inferior{
+    background-color: white;
     border-bottom: 1px solid #C1D96A;
 }
 .bordes_laterales > :first-child {
@@ -17,7 +17,6 @@
     color: #95BF39;
 }
 
-/* HEADER */
 header{
     background-color: #C1D96A;
 }
@@ -31,9 +30,6 @@ header span{
     width: auto;
 }
 
-
-
-/* FOOTER */
 footer{
     background-color: #C1D96A;
 }
@@ -61,4 +57,8 @@ footer span{
 .card-container{
     flex-grow: 1;
     overflow: hidden;
+}
+
+.cuerpo{
+    margin-top: 8%;
 }

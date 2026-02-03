@@ -34,5 +34,6 @@ Lista de las tecnologías que planeamos usar:
 
 Usamos esto para organizarnos:
 
-- Trello
-- GitHub
+* Trello
+* GitHub
+  

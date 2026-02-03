@@ -1,20 +1,18 @@
 <?php
-
 namespace App\Routes;
-
 class Router
 {
     private $rutas = [];
-
     public function __construct()
     {
         $this->rutas['/'] = ['controller' => 'Controller', 'action' => 'index'];
         $this->rutas['/testdb'] = ['controller' => 'Controller','action' => 'testDB'];
-        
+
         //Rutas Victor
         //$this->rutas['/'] = ['controller' => 'Controller_victor_vistas', 'action' => 'index'];
         $this->rutas['/about'] = ['controller' => 'Controller_victor_about','action' => 'about'];
         $this->rutas['/datos'] = ['controller' => 'Controller_victor_datos','action' => 'datos'];
+
         $this->rutas['/humedad'] = ['controller' => 'Controller_victor_humedad','action' => 'pedirHumedad'];
 
         
@@ -27,11 +25,18 @@ class Router
         
 
 
+        $this->rutas['/filtrarHumedad'] = ['controller' => 'Controller_victor_humedad','action' => 'filtrarHumedad'];
 
+        //Rutas Miguel
+        // $this->rutas['/temperatura'] = ['controller' => 'Controller_miguel_temperatura','action' => 'historicoTemperatura'];
+
+        //rutas luismi
+        $this->rutas['/temperatura'] = ['controller' => 'Controller_Luismi', 'action' => 'historicoTemperatura'];
+        $this->rutas['/presion'] = ['controller' => 'Controller_Luismi', 'action' => 'historicoPresion'];
     }
 
     public function handleRequest()
-    {   
+    {
         error_log($_SERVER["REQUEST_URI"]);
         $ruta = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
@@ -58,6 +63,5 @@ class Router
         }
     }
 }
-
 $router = new Router();
 $router->handleRequest();
