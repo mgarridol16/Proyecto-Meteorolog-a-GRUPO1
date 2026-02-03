@@ -6,10 +6,21 @@ class Router
     public function __construct()
     {
         $this->rutas['/'] = ['controller' => 'Controller', 'action' => 'index'];
-        $this->rutas['/testdb'] = ['controller' => 'Controller','action' => 'testDB'];
+        $this->rutas['/testdb'] = ['controller' => 'Controller', 'action' => 'testDB'];
 
         //Rutas Victor
         //$this->rutas['/'] = ['controller' => 'Controller_victor_vistas', 'action' => 'index'];
+        $this->rutas['/about'] = ['controller' => 'Controller_victor_about', 'action' => 'about'];
+        $this->rutas['/datos'] = ['controller' => 'Controller_victor_datos', 'action' => 'datos'];
+        $this->rutas['/humedad'] = ['controller' => 'Controller_victor_humedad', 'action' => 'pedirHumedad'];
+
+        //Rutas Miguel
+        $this->rutas['/temperatura'] = ['controller' => 'Controller_miguel_temperatura', 'action' => 'historicoTemperatura'];
+
+        //Rutas Miguel LLUVIA ACOMULADA
+        $this->rutas['/lluviaAcomulada'] = ['controller' => 'Controller_miguel_lluviaAcomulada', 'action' => 'historicoLluviaAcomulada'];
+
+        $this->rutas['/viento'] = ['controller' => 'Controller_miguel_viento', 'action' => 'historicoViento'];
         $this->rutas['/about'] = ['controller' => 'Controller_victor_about','action' => 'about'];
         $this->rutas['/datos'] = ['controller' => 'Controller_victor_datos','action' => 'datos'];
 
