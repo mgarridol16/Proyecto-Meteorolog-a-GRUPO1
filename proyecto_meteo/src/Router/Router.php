@@ -21,19 +21,17 @@ class Router
         $this->rutas['/lluviaAcomulada'] = ['controller' => 'Controller_miguel_lluviaAcomulada', 'action' => 'historicoLluviaAcomulada'];
 
         $this->rutas['/viento'] = ['controller' => 'Controller_miguel_viento', 'action' => 'historicoViento'];
-        $this->rutas['/about'] = ['controller' => 'Controller_victor_about','action' => 'about'];
-        $this->rutas['/datos'] = ['controller' => 'Controller_victor_datos','action' => 'datos'];
 
-        $this->rutas['/humedad'] = ['controller' => 'Controller_victor_humedad','action' => 'pedirHumedad'];
 
-        
+
+
 
         //Rutas Mikel
         $this->rutas['/medidas-24h'] = ['controller' => 'Controller_mikel', 'action' => 'medidas'];
         $this->rutas['/historico-viento'] = ['controller' => 'Controller_mikel', 'action' => 'historicoViento'];
 
 
-        
+
 
 
         $this->rutas['/filtrarHumedad'] = ['controller' => 'Controller_victor_humedad','action' => 'filtrarHumedad'];
