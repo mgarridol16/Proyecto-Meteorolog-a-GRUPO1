@@ -3,9 +3,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 class Datos extends Model{
     protected $table = "datos";
-    // protected $primaryKey = 'id';
     public $timestamps = false;
     protected $fillable = ["temperatura", "presion", "humedad", "viento", "lluvia"];
+
 
     public static function obtenerUltimaTemperatura(){
         return self::orderBy('fechaSistema', 'DESC')->first();
@@ -49,3 +49,4 @@ class Datos extends Model{
         return $query->limit(10)->get();
     }
 }
+
