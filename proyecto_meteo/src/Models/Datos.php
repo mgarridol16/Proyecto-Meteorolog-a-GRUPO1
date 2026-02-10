@@ -1,6 +1,9 @@
 <?php
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
+
+use function Symfony\Component\Clock\now;
+
 class Datos extends Model{
     protected $table = "datos";
     public $timestamps = false;
@@ -33,6 +36,7 @@ class Datos extends Model{
     }
 
     public static function obtenerPresiones30Dias(){
+
         return self::where('fechaSistema', '>=', date('Y-m-d H:i:s', strtotime('-30 days')))
                 ->orderBy('fechaSistema', 'ASC')
                 ->get(['fechaSistema', 'presion']);

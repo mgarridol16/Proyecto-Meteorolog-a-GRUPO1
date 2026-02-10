@@ -1,132 +1,131 @@
 {% extends "base.html.twig" %}
 
 {% block content %}
-<div class="container py-5">
-  <h1 class="text-center mb-4">Humedad Relativa</h1>
+	<div class="container py-5">
+		<h1 class="text-center mb-4">Humedad Relativa</h1>
 
-  {% set ultimaLectura = datos|last %}
-  <div class="card mb-4 shadow-sm">
-    <div class="card-body text-center">
-      <h6 class="text-muted mb-2">Última lectura registrada</h6>
+		{% set ultimaLectura = datos|last %}
+		<div class="card mb-4 shadow-sm">
+			<div class="card-body text-center">
+				<h6 class="text-muted mb-2">Última lectura registrada</h6>
 
-      {% if ultimaLectura %}
-      <div class="d-flex justify-content-center align-items-center gap-4">
-        <div>
-          <span class="fs-3 fw-bold text-primary">
-            {{ ultimaLectura.humedad }} %
-          </span>
-          <div class="text-muted small">Humedad</div>
-        </div>
-        <div>
-          <span class="fs-6">
-            {{ ultimaLectura.fechaSistema }}
-          </span>
-          <div class="text-muted small">Fecha</div>
-        </div>
-      </div>
-      {% else %}
-      <p class="text-muted mb-0">No hay lecturas disponibles</p>
-      {% endif %}
-    </div>
-  </div>
+				{% if ultimaLectura %}
+					<div class="d-flex justify-content-center align-items-center gap-4">
+						<div>
+							<span class="fs-3 fw-bold text-primary">
+								{{ ultimaLectura.humedad }}
+								%
+							</span>
+							<div class="text-muted small">Humedad</div>
+						</div>
+						<div>
+							<span class="fs-6">
+								{{ ultimaLectura.fechaSistema }}
+							</span>
+							<div class="text-muted small">Fecha</div>
+						</div>
+					</div>
+				{% else %}
+					<p class="text-muted mb-0">No hay lecturas disponibles</p>
+				{% endif %}
+			</div>
+		</div>
+		<!-- Filtro por fechas -->
+		<form method="post" action="/filtrarHumedad" class="card mb-3">
+			<div class="card-body">
 
-  <div class="card shadow-sm">
+				<h6 class="mb-3 fw-semibold text-muted">
+					Filtrar por Fechas
+				</h6>
 
-    <div class="card-header bg-white">
-      <h5 class="mb-0 fw-semibold text-center">
-        📊 Registro de Humedad
-      </h5>
-    </div>
+				<div class="row g-2 align-items-end">
+					<div class="col-md-4">
+						<label class="form-label small">Desde</label>
+						<input type="date" name="fechaDesde" class="form-control">
+					</div>
 
-    <div class="card-body">
+					<div class="col-md-4">
+						<label class="form-label small">Hasta</label>
+						<input type="date" name="fechaHasta" class="form-control">
+					</div>
 
-      <!-- Chart -->
-      <div class="mb-4">
-        <canvas id="humedadChart" height="120"></canvas>
-      </div>
+					<div class="col-md-4 d-grid">
+						<button type="submit" class="btn btn-primary">
+							Filtrar
+						</button>
+					</div>
+				</div>
 
-      <!-- Filtro por fechas -->
-      <form method="post" action="/filtrarHumedad" class="card mb-3">
-        <div class="card-body">
+			</div>
+		</form>
+		<div class="card shadow-sm">
 
-          <h6 class="mb-3 fw-semibold text-muted">
-            Filtrar por Fechas
-          </h6>
+			<div class="card-header bg-white">
+				<h5 class="mb-0 fw-semibold text-center">
+					📊 Registro de Humedad
+				</h5>
+			</div>
 
-          <div class="row g-2 align-items-end">
-            <div class="col-md-4">
-              <label class="form-label small">Desde</label>
-              <input type="date" name="fechaDesde" class="form-control">
-            </div>
+			<div
+				class="card-body">
 
-            <div class="col-md-4">
-              <label class="form-label small">Hasta</label>
-              <input type="date" name="fechaHasta" class="form-control">
-            </div>
+				<!-- Chart -->
+				<div class="mb-4">
+					<canvas id="humedadChart" height="120"></canvas>
+				</div>
 
-            <div class="col-md-4 d-grid">
-              <button type="submit" class="btn btn-primary">
-                Filtrar
-              </button>
-            </div>
-          </div>
+				<!-- Table -->
+				<div class="table-responsive">
+					<table class="table table-hover align-middle text-center">
+						<thead class="table-dark">
+							<tr>
+								<th scope="col">Fecha</th>
+								<th scope="col">Humedad (%)</th>
+							</tr>
+						</thead>
+						<tbody id="tablaHumedad">
+							{% for dato in datos %}
+								<tr data-fecha="{{ dato.fechaSistema }}" data-humedad="{{ dato.humedad }}">
+									<td>{{ dato.fechaSistema }}</td>
+									<td>
+										<span class="badge bg-primary fs-6">
+											{{ dato.humedad }}
+											%
+										</span>
+									</td>
+								</tr>
+							{% else %}
+								<tr>
+									<td colspan="2" class="text-muted py-4">
+										No hay datos disponibles
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
 
-        </div>
-      </form>
+			</div>
+		</div>
 
+	</div>
 
+	<!-- JS filtro -->
+	<script>
+		document.getElementById('filtroTabla').addEventListener('keyup', function () {
+const filtro = this.value.toLowerCase();
+const filas = document.querySelectorAll('#tablaHumedad tr');
 
-      <!-- Table -->
-      <div class="table-responsive">
-        <table class="table table-hover align-middle text-center">
-          <thead class="table-dark">
-            <tr>
-              <th scope="col">Fecha</th>
-              <th scope="col">Humedad (%)</th>
-            </tr>
-          </thead>
-          <tbody id="tablaHumedad">
-            {% for dato in datos %}
-            <tr data-fecha="{{ dato.fechaSistema }}" data-humedad="{{ dato.humedad }}">
-              <td>{{ dato.fechaSistema }}</td>
-              <td>
-                <span class="badge bg-primary fs-6">
-                  {{ dato.humedad }} %
-                </span>
-              </td>
-            </tr>
-            {% else %}
-            <tr>
-              <td colspan="2" class="text-muted py-4">
-                No hay datos disponibles
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+filas.forEach(fila => {
+const fecha = fila.dataset.fecha ?. toLowerCase() || '';
+const humedad = fila.dataset.humedad || '';
 
-    </div>
-  </div>
-
-</div>
-
-<!-- JS filtro -->
-<script>
-  document.getElementById('filtroTabla').addEventListener('keyup', function () {
-    const filtro = this.value.toLowerCase();
-    const filas = document.querySelectorAll('#tablaHumedad tr');
-
-    filas.forEach(fila => {
-      const fecha = fila.dataset.fecha?.toLowerCase() || '';
-      const humedad = fila.dataset.humedad || '';
-
-      if (fecha.includes(filtro) || humedad.includes(filtro)) {
-        fila.style.display = '';
-      } else {
-        fila.style.display = 'none';
-      }
-    });
-  });
-</script>
+if (fecha.includes(filtro) || humedad.includes(filtro)) {
+fila.style.display = '';
+} else {
+fila.style.display = 'none';
+}
+});
+});
+	</script>
 {% endblock %}
