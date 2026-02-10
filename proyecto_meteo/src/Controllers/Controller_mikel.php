@@ -37,7 +37,7 @@ class Controller_mikel
      */
     private function getDatosRango24h($inicio, $fin)
     {
-        echo Datos::first();
+        Datos::first();
         return Datos::where('fechaSistema', '>=', $inicio)
                     ->where('fechaSistema', '<=', $fin)
                     ->orderBy('fechaSistema', 'desc')
