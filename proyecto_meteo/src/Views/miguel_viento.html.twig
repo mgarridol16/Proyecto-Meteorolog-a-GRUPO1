@@ -1,0 +1,174 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h1 class="text-center mb-4">Histórico de Velocidad del Viento</h1>
+
+    {# Bloque 1: Última Lectura y Estadísticas del Filtro #}
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <div class="card bg-info text-white text-center shadow h-100">
+          <div class="card-body d-flex flex-column">
+            <div class="mb-auto">
+              <h5 class="card-title">Viento Actual</h5>
+              <p class="display-4">{{ actual.viento }} <small class="fs-6">km/h</small></p>
+              <small>{{ actual.fechaSistema }}</small>
+            </div>
+
+            {% if estadisticas %}
+              <div class="mt-4 pt-3 border-top border-light">
+                <h6 class="card-title">Estadísticas del Filtro</h6>
+                <div class="text-start px-3">
+                  <p class="mb-2">
+                    <strong>Media:</strong> {{ estadisticas.viento_medio|number_format(2) }} km/h
+                  </p>
+                  <p class="mb-2">
+                    <strong>Máx:</strong> <span class="text-warning fw-bold">{{ estadisticas.viento_maximo }} km/h</span>
+                  </p>
+                  <p class="mb-0">
+                    <strong>Mín:</strong> <span class="text-white fw-bold">{{ estadisticas.viento_minimo }} km/h</span>
+                  </p>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      {# Bloque 2: Filtro por Fechas #}
+      <div class="col-md-8">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">Filtrar por Fechas</h5>
+            <form action="/viento" method="GET" class="row g-3">
+              <div class="col-md-5">
+                <input type="datetime-local" name="fechaInicio" value="{{ fechaInicio }}" class="form-control" required>
+              </div>
+              <div class="col-md-5">
+                <input type="datetime-local" name="fechaFin" value="{{ fechaFin }}" class="form-control" required>
+              </div>
+              <div class="col-md-2">
+                <button type="submit" class="btn btn-info text-white w-100">Filtrar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# Bloque 3: Tabla de Promedios por Día (Estilo Widget) #}
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">
+          {% if fechaInicio %}
+            Viento por Día (Filtrado: {{ fechaInicio|date('d/m/Y') }} - {{ fechaFin|date('d/m/Y') }})
+          {% else %}
+            Viento de la Semana Actual
+          {% endif %}
+        </h5>
+
+        <div class="table-responsive">
+          <table class="table table-bordered text-center">
+            <thead class="table-light">
+              <tr>
+                {% for dia in vientoSemana %}
+                  <th>
+                    <div>{{ dia.dia_semana_es }}</div>
+                    <small class="text-muted">{{ dia.fecha|date('d/m') }}</small>
+                  </th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {% for dia in vientoSemana %}
+                  <td {% if not dia.tiene_datos %} class="table-secondary" {% endif %}>
+                    {% if dia.tiene_datos %}
+                      <div class="fw-bold text-info fs-5">
+                        {{ dia.viento_media|number_format(1) }} <small>km/h</small>
+                      </div>
+                      <small class="d-block">
+                        <span class="text-danger">↑{{ dia.viento_maxima }}</span>
+                        <span class="text-primary">↓{{ dia.viento_minima }}</span>
+                      </small>
+                    {% else %}
+                      <div class="text-muted fst-italic">Sin datos</div>
+                    {% endif %}
+                  </td>
+                {% endfor %}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    {# Bloque 4: Gráfica de Chart.js #}
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">Gráfica de Fluctuación</h5>
+        {% if registrosViento is empty %}
+          <div class="alert alert-warning">No hay datos en este periodo para la gráfica.</div>
+        {% endif %}
+        <canvas id="vientoChart" width="400" height="150"></canvas>
+      </div>
+    </div>
+
+    {# Bloque 5: Registros Detallados #}
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+          <table class="table table-hover">
+            <thead class="table-dark">
+              <tr>
+                <th>Fecha</th>
+                <th>Velocidad (km/h)</th>
+                <th>Humedad (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for reg in registrosViento %}
+                <tr>
+                  <td>{{ reg.fechaSistema }}</td>
+                  <td><strong>{{ reg.viento }}</strong> km/h</td>
+                  <td>{{ reg.humedad }}%</td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="3" class="text-center text-muted">No hay registros. Ajusta el filtro.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ctx = document.getElementById('vientoChart').getContext('2d');
+    const datosPHP = {{ registrosViento|json_encode()|raw }};
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: datosPHP.map(i => i.fechaSistema),
+        datasets: [{
+          label: 'Velocidad del Viento (km/h)',
+          data: datosPHP.map(i => i.viento),
+          borderColor: '#0dcaf0',
+          backgroundColor: 'rgba(13, 202, 240, 0.1)',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  </script>
+{% endblock %}

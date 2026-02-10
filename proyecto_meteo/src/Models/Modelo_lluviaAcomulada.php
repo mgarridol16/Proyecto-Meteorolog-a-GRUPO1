@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
-class Modelo_temperatura extends Model
+class Modelo_lluviaAcomulada extends Model
 {
   protected $table = "datos";
   protected $primaryKey = 'fechaSistema';
@@ -41,7 +41,7 @@ class Modelo_temperatura extends Model
     return self::orderBy('fechaSistema', 'desc')->first();
   }
 
-  public static function obtenerTemperaturas30Dias()
+  public static function obtenerLluvia30Dias()
   {
     $fechaLimite = date('Y-m-d H:i:s', strtotime('-30 days'));
     return self::where('fechaSistema', '>=', $fechaLimite)->orderBy('fechaSistema', 'asc')->get();
@@ -52,19 +52,11 @@ class Modelo_temperatura extends Model
     return self::where('fechaSistema', '>=', $inicio)
       ->where('fechaSistema', '<=', $fin)
       ->selectRaw('
-                    AVG(temperatura) as temperatura_media,
-                    MIN(temperatura) as temperatura_minima,
-                    MAX(temperatura) as temperatura_maxima,
-                    AVG(humedad) as humedad_media,
-                    MIN(humedad) as humedad_minima,
-                    MAX(humedad) as humedad_maxima,
-                    AVG(presion) as presion_media,
-                    MIN(presion) as presion_minima,
-                    MAX(presion) as presion_maxima,
-                    AVG(viento) as viento_medio,
-                    MIN(viento) as viento_minimo,
-                    MAX(viento) as viento_maximo,
-                    SUM(lluvia) as lluvia_total
+                    SUM(lluvia) as lluvia_acumulada,
+                    AVG(lluvia) as lluvia_media,
+                    MIN(lluvia) as lluvia_minima,
+                    MAX(lluvia) as lluvia_maxima,
+                    COUNT(lluvia) as registros_lluvia
                 ')
       ->first();
   }
@@ -73,78 +65,72 @@ class Modelo_temperatura extends Model
   {
     return self::orderBy('fechaSistema', 'desc')->limit($limite)->get();
   }
-  // Para la semana actual (sin filtro)
-  public static function obtenerTemperaturasSemana()
+
+  public static function obtenerLluviaSemana()
   {
     $inicioSemana = date('Y-m-d 00:00:00', strtotime('monday this week'));
     $finSemana = date('Y-m-d 23:59:59', strtotime('sunday this week'));
 
-    return self::obtenerTemperaturasPorDia($inicioSemana, $finSemana);
+    return self::obtenerLluviaPorDia($inicioSemana, $finSemana);
   }
 
-  // Para cualquier rango de fechas (reutilizable)
-  public static function obtenerTemperaturasPorDia($fechaInicio, $fechaFin)
+  public static function obtenerLluviaPorDia($fechaInicio, $fechaFin)
   {
-    // 1. Obtener datos reales de la BD (método simple del tema, pág. 80-82)
+
     $datosReales = self::where('fechaSistema', '>=', $fechaInicio)
       ->where('fechaSistema', '<=', $fechaFin)
       ->get();
 
-    // 2. Agrupar manualmente por fecha (usando arrays básicos, pág. 14-15)
     $datosPorFecha = [];
     foreach ($datosReales as $registro) {
       $fecha = date('Y-m-d', strtotime($registro->fechaSistema));
 
       if (!isset($datosPorFecha[$fecha])) {
         $datosPorFecha[$fecha] = [
-          'temperaturas' => [],
-          'maxima' => $registro->temperatura,
-          'minima' => $registro->temperatura
+          'lluvias' => [],
+          'maxima' => $registro->lluvia,
+          'minima' => $registro->lluvia
         ];
       }
 
-      $datosPorFecha[$fecha]['temperaturas'][] = $registro->temperatura;
+      $datosPorFecha[$fecha]['lluvias'][] = $registro->lluvia;
 
-      // Actualizar máxima y mínima
-      if ($registro->temperatura > $datosPorFecha[$fecha]['maxima']) {
-        $datosPorFecha[$fecha]['maxima'] = $registro->temperatura;
+      if ($registro->lluvia > $datosPorFecha[$fecha]['maxima']) {
+        $datosPorFecha[$fecha]['maxima'] = $registro->lluvia;
       }
-      if ($registro->temperatura < $datosPorFecha[$fecha]['minima']) {
-        $datosPorFecha[$fecha]['minima'] = $registro->temperatura;
+      if ($registro->lluvia < $datosPorFecha[$fecha]['minima']) {
+        $datosPorFecha[$fecha]['minima'] = $registro->lluvia;
       }
     }
 
-    // 3. Generar todos los días del rango (pág. 19 - funciones de fecha)
     $inicio = strtotime($fechaInicio);
     $fin = strtotime($fechaFin);
     $resultado = [];
 
     for ($fecha = $inicio; $fecha <= $fin; $fecha = strtotime('+1 day', $fecha)) {
       $fechaStr = date('Y-m-d', $fecha);
-      $diaSemana = date('l', $fecha); // Monday, Tuesday...
+      $diaSemana = date('l', $fecha);
 
-      // Si hay datos para este día, calcular media
       if (isset($datosPorFecha[$fechaStr])) {
-        $temps = $datosPorFecha[$fechaStr]['temperaturas'];
-        $media = array_sum($temps) / count($temps); // array_sum y count, pág. 19
+        $lluvias = $datosPorFecha[$fechaStr]['lluvias'];
+        $acumulada = array_sum($lluvias);
 
         $resultado[] = [
           'fecha' => $fechaStr,
           'dia_semana' => self::traducirDia($diaSemana),
-          'temperatura_media' => round($media, 1),
-          'temperatura_maxima' => $datosPorFecha[$fechaStr]['maxima'],
-          'temperatura_minima' => $datosPorFecha[$fechaStr]['minima'],
-          'num_lecturas' => count($temps),
+          'lluvia_acumulada' => round($acumulada, 2),
+          'lluvia_maxima' => $datosPorFecha[$fechaStr]['maxima'],
+          'lluvia_minima' => $datosPorFecha[$fechaStr]['minima'],
+          'num_lecturas' => count($lluvias),
           'tiene_datos' => true
         ];
       } else {
-        // Día sin datos
         $resultado[] = [
           'fecha' => $fechaStr,
           'dia_semana' => self::traducirDia($diaSemana),
-          'temperatura_media' => null,
-          'temperatura_maxima' => null,
-          'temperatura_minima' => null,
+          'lluvia_acumulada' => null,
+          'lluvia_maxima' => null,
+          'lluvia_minima' => null,
           'num_lecturas' => 0,
           'tiene_datos' => false
         ];
@@ -154,7 +140,7 @@ class Modelo_temperatura extends Model
     return $resultado;
   }
 
-  // Método auxiliar (pág. 22 - funciones)
+
   private static function traducirDia($diaIngles)
   {
     $dias = [
@@ -170,57 +156,46 @@ class Modelo_temperatura extends Model
     return $dias[$diaIngles] ?? $diaIngles;
   }
 
-
-
-  //FUNCIONES PACK 7 -MIGUEL T
-  public static function buscarVientoEntreFechas($inicio, $fin)
+  // FUNCIONES PACK LLUVIA ACUMULADA - MIGUEL
+  public static function buscarLluviaEntreFechas($inicio, $fin)
   {
     // Limpiamos la 'T' del formato HTML para SQL
     $f_i = str_replace('T', ' ', $inicio);
     $f_f = str_replace('T', ' ', $fin);
 
     return self::whereBetween('fechaSistema', [$f_i, $f_f])
-      ->select('fechaSistema', 'viento', 'humedad') // Pedimos solo lo necesario
+      ->select('fechaSistema', 'lluvia', 'humedad')
       ->orderBy('fechaSistema', 'asc')
       ->get();
   }
 
-  public static function obtenerEstadisticasViento($inicio, $fin)
+  public static function obtenerEstadisticasLluvia($inicio, $fin)
   {
     $f_i = str_replace('T', ' ', $inicio);
     $f_f = str_replace('T', ' ', $fin);
 
     return self::whereBetween('fechaSistema', [$f_i, $f_f])
-      ->selectRaw('AVG(viento) as viento_medio,
-                     MIN(viento) as viento_minimo,
-                     MAX(viento) as viento_maximo')
+      ->selectRaw('SUM(lluvia) as lluvia_acumulada,
+                     AVG(lluvia) as lluvia_media,
+                     MIN(lluvia) as lluvia_minima,
+                     MAX(lluvia) as lluvia_maxima')
       ->first();
   }
 
-  public static function obtenerViento30Dias()
-  {
-    $hace30 = date('Y-m-d H:i:s', strtotime('-30 days'));
-
-    return self::where('fechaSistema', '>=', $hace30)
-      ->select('fechaSistema', 'viento')
-      ->orderBy('fechaSistema', 'asc')
-      ->get();
-  }
-
-  public static function obtenerUltimoViento()
+  public static function obtenerUltimaLluvia()
   {
     return self::orderBy('fechaSistema', 'desc')->first();
   }
 
-  public static function listarVientoConLimite($n)
+  public static function listarLluviaConLimite($n)
   {
     return self::orderBy('fechaSistema', 'desc')
       ->limit($n)
       ->get()
-      ->reverse(); // Para que el tiempo vaya de izquierda a derecha
+      ->reverse();
   }
 
-  public static function buscarVientoPorFecha($fecha)
+  public static function buscarLuviaPorFecha($fecha)
   {
     return self::where('fechaSistema', 'like', $fecha . '%')->get();
   }
