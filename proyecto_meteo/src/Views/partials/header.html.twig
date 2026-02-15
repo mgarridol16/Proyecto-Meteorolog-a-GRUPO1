@@ -11,25 +11,21 @@
 				<span class="navbar-toggler-icon"></span>
 			</button>
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
-				<ul class="nav nav-pills bordes_laterales">
+				<ul class="nav nav-pills bordes_laterales" id="mainNav">
 					<li class="nav-item">
 						<a href="/" class="nav-link">Inicio</a>
 					</li>
-					<li></li>
-					<li class="nav-item">
-						<a href="/temperatura" class="nav-link">Temperatura</a>
-					</li>
-					<li class="nav-item">
-						<a href="/presion" class="nav-link">Presion Atmosferica</a>
-					</li>
-					<li class="nav-item">
-						<a href="/humedad" class="nav-link">Humedad</a>
-					</li>
-					<li class="nav-item">
-						<a href="/historico-viento" class="nav-link">Viento</a>
-					</li>
-					<li class="nav-item">
-						<a href="/lluviaAcomulada" class="nav-link">Lluvia</a>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							Datos
+						</a>
+						<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+							<li><a class="dropdown-item" href="/temperatura">Temperatura</a></li>
+							<li><a class="dropdown-item" href="/presion">Presion Atmosferica</a></li>
+							<li><a class="dropdown-item" href="/humedad">Humedad</a></li>
+							<li><a class="dropdown-item" href="/historico-viento">Viento</a></li>
+							<li><a class="dropdown-item" href="/lluviaAcomulada">Lluvia</a></li>
+						</ul>
 					</li>
 					<li class="nav-item">
 						<a href="/about" class="nav-link">About</a>
@@ -39,4 +35,37 @@
 		</div>
 	</div>
 </nav>
+
+<script>
+	// Marcar la pestaña activa automáticamente
+	document.addEventListener('DOMContentLoaded', function() {
+		const currentPath = window.location.pathname;
+		const navLinks = document.querySelectorAll('#mainNav .nav-link, #mainNav .dropdown-item');
+		
+		navLinks.forEach(link => {
+			const href = link.getAttribute('href');
+			if (href && href !== '#' && !href.startsWith('javascript:')) {
+				const linkPath = new URL(link.href).pathname;
+				
+				// Comparar rutas
+				if (currentPath === linkPath || 
+					(currentPath !== '/' && linkPath !== '/' && currentPath.startsWith(linkPath))) {
+					link.classList.add('active');
+					
+					// Si es un item de dropdown, marcar también el padre
+					if (link.classList.contains('dropdown-item')) {
+						const parentToggle = link.closest('.dropdown').querySelector('.dropdown-toggle');
+						if (parentToggle) parentToggle.classList.add('active');
+					}
+				}
+			}
+		});
+		
+		// Si ninguna está activa y estamos en /, activar "Inicio"
+		if (currentPath === '/' && !document.querySelector('#mainNav .nav-link.active')) {
+			const inicioLink = document.querySelector('#mainNav .nav-link[href="/"]');
+			if (inicioLink) inicioLink.classList.add('active');
+		}
+	});
+</script>
 
