@@ -14,7 +14,7 @@ class Router
         //$this->rutas['/'] = ['controller' => 'Controller_victor_vistas', 'action' => 'index'];
         $this->rutas['/about'] = ['controller' => 'Controller_victor_about', 'action' => 'about'];
         $this->rutas['/datos'] = ['controller' => 'Controller_victor_datos', 'action' => 'datos'];
-        $this->rutas['/humedad'] = ['controller' => 'Controller_victor_humedad', 'action' => 'pedirHumedad'];
+        $this->rutas['/humedad'] = ['controller' => 'Controller_victor_humedad', 'action' => 'humedad'];
         $this->rutas['/filtrarHumedad'] = ['controller' => 'Controller_victor_humedad','action' => 'filtrarHumedad'];
 
         //Rutas Miguel
@@ -33,8 +33,6 @@ class Router
         $this->rutas['/'] = ['controller' => 'Controller_mikel', 'action' => 'medidas'];
         $this->rutas['/historico-viento'] = ['controller' => 'Controller_mikel', 'action' => 'historicoViento'];
 
-
-        $this->rutas['/filtrarHumedad'] = ['controller' => 'Controller_victor_humedad','action' => 'filtrarHumedad'];
 
         //Rutas Miguel
         // $this->rutas['/temperatura'] = ['controller' => 'Controller_miguel_temperatura','action' => 'historicoTemperatura'];
